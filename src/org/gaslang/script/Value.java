@@ -81,7 +81,6 @@ public abstract class Value<T>
 	 * @Operator +
 	 */
 	public Value<?> add(Value<?> arg0) {
-		System.out.println(getClass());
 		throw new RuntimeException();
 	}
 

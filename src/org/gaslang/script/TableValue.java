@@ -26,7 +26,7 @@ public class TableValue extends Value<HashMap<Value<?>, Value<?>>> implements Le
 	
 	@Override
 	public String asString() {
-		StringBuffer buffer = new StringBuffer();
+		StringBuilder buffer = new StringBuilder();
 		buffer.append('{');
 		for (Value<?> value : jValue().keySet()) {
 			buffer.append(String.format(" %s = %s ", value, jValue().get(value)));
