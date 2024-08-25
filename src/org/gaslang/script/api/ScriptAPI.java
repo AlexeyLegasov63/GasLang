@@ -20,7 +20,7 @@ public class ScriptAPI
 {
 	public static final StringValue VERSION = string("1.0");
 	
-	public static final ScriptAPI SCRIPT_API = new ScriptAPI();
+	public static ScriptAPI SCRIPT_API;
 	
 	public static final StringValue STRUCT_SIGNATURE = string("struct");
 	
@@ -111,17 +111,21 @@ public class ScriptAPI
 		} else if (value instanceof Boolean) {
 			return bool((Boolean) value);
 		}
-		throw new RuntimeException("" + value.getClass().getName());
+		throw new RuntimeException("Unknown jGasLang type: " + value.getClass().getName());
 	}
 	
 	private final ArrayList<ScriptType> types;
 	private final ArrayList<ScriptModule> modules;
 	private final ScriptBootstrap gasPackageLoader;
 	
-	private ScriptAPI() {
+	public ScriptAPI() {
 		this.modules = new ArrayList<>();
 		this.types = new ArrayList<>();
 		this.gasPackageLoader = new ScriptBootstrap();
+
+		SCRIPT_API = new ScriptAPI();
+
+		registerPackage(("org.gaslang.script.lib.boot"));
 	}
 	
 	public void global(String name, Value<?> value) {
@@ -155,10 +159,7 @@ public class ScriptAPI
 	public void registerPackage(String packageName) {
 		registerPackage(gasPackageLoader.loadPackage(packageName));
 	}
-	
-	static {
-		SCRIPT_API.registerPackage(("org.gaslang.script.lib.boot"));
-	}
+
 	
 	public static enum BinaryOperator {
 		ADD(TokenType.PLUS, '+'),
