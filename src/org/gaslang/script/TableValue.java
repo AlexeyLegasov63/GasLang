@@ -4,15 +4,9 @@ import java.util.HashMap;
 
 public class TableValue extends Value<HashMap<Value<?>, Value<?>>> implements Lengthable, Iterable, PrimitiveValue
 {
-	private TableValue metatable;
 	
 	public TableValue(HashMap<Value<?>, Value<?>> arg0) {
-		this(arg0, null);
-	}
-
-	public TableValue(HashMap<Value<?>, Value<?>> arg0, TableValue arg1) {
 		super(arg0);
-		this.metatable = arg1;
 	}
 	
 	public void clear() {
