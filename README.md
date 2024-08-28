@@ -1,16 +1,10 @@
+![file](https://github.com/user-attachments/assets/fcd49a3d-3f14-4262-99ca-e2313a39e9d0)
+# The Gas Programming Language
 
+This programming language allows to script any program that involves Java code.
 
 ```lua
-
-<! Object mask
-mask Vector 
-
-object Vector2(x, y) wears Vector
-
-object Vector3(x, y, z) wears Vector
-
-let vectors = List(Vector2(5,5), Vector3(5,5,5))
-
-foreach vector in vectors do print(vector wears Vector)
-
+print("Hello world!", "This is Gaslang!")
 ```
+
+This was created by me just for fun and experience and has no purpose.
