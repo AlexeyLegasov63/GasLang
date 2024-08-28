@@ -1,5 +1,4 @@
-![file](https://github.com/user-attachments/assets/bc7e8898-22d7-47f9-a4e0-3b3f2efb57de)
-
+![file](https://github.com/user-attachments/assets/fcd49a3d-3f14-4262-99ca-e2313a39e9d0)
 # The Gas Programming Language
 
 This programming language allows to script any program that involves Java code.
