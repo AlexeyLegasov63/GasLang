@@ -47,7 +47,7 @@ public class FileParser
 	}
 
 	public Script parse() {
-		script = new Script();
+		script = new Script(file);
 		
 		try {
 			while(!match(EOF)) {

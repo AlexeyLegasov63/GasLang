@@ -10,21 +10,14 @@ import org.gaslang.script.lib.annotation.GasModule;
 import org.gaslang.script.lib.annotation.GasType;
 import org.gaslang.script.lib.annotation.GasVariable;
 
-import java.io.File;
-import java.io.FilenameFilter;
 import java.io.IOException;
 import java.lang.reflect.Field;
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.net.URL;
 import java.nio.file.*;
-import java.security.CodeSource;
 import java.util.*;
 import java.util.stream.Stream;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipInputStream;
 
 import static org.gaslang.script.api.ScriptAPI.value;
 

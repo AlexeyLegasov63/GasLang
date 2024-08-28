@@ -32,7 +32,7 @@ public class GlobalModule
 	public NumberValue sizeOf(Lengthable lengthable) {
 		return number(lengthable.getSize());
 	}
-	
+
 	@GasFunction
 	public StringValue scopeOf(FunctionValue value) {
 		return string(value.localStack.toString());
@@ -47,13 +47,18 @@ public class GlobalModule
 	public StringValue typeOf(Value<?> value) {
 		return string(value.getValueType().name());
 	}
-	
+
+	@GasFunction
+	public ScriptValue require(String fileName) {
+		return new ScriptValue(GasScript.loadScript(fileName));
+	}
+
 	@GasFunction
 	public ArrayValue range(Optional<Integer> startn, Optional<Integer> endn) {
-		int start = startn.orElse(0).intValue();
-		int end = endn.orElse(start).intValue();
+		int start = startn.orElse(0);
+		int end = endn.orElse(start);
 
-		if (!endn.isPresent()) start = 0;
+		if (endn.isEmpty()) start = 0;
 		
 		Number[] array = new Number[Math.abs(end-start)];
 		

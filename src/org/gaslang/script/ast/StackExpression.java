@@ -31,17 +31,16 @@ public class StackExpression implements Expression, Accessible
 		};
 		
 		if (value != null) {
-			if (value instanceof AliasValue) {
-				AliasValue aliasValue = (AliasValue)value;
+			if (value instanceof AliasValue aliasValue) {
 				value = gr.get(aliasValue.jValue());
-				if (value == null) throw new RuntimeException();
+				if (value == null) throw new RuntimeException(String.format("There's no such alias: %s", literalName));
 				return value;
 			}
 			return value;
 		}
 		
 		if (gr.isPrimary()) 
-			throw new RuntimeException("" + gr + " " + token.getLiteral());
+			throw new RuntimeException(String.format("There's no such variable: %s", literalName));
 		
 		return ScriptAPI.NULL;
 	}

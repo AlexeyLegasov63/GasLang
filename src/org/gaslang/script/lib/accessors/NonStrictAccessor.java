@@ -40,11 +40,7 @@ public class NonStrictAccessor extends MethodAccessor
 				}
 				arguments[i] = paramClass.cast(object);
 			}
-			
-			
-			//System.out.println(Arrays.toString(nativeMethod.getParameterTypes()));
-			//System.out.println(Arrays.toString(arguments));
-			
+
 			return value(nativeMethod.invoke(objectInstance, arguments));
 			
 		} catch (Exception ex) {

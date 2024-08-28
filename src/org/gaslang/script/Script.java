@@ -3,6 +3,7 @@ package org.gaslang.script;
 import org.gaslang.script.run.GasRuntime;
 import org.gaslang.script.visitor.Visitor;
 
+import java.io.File;
 import java.util.ArrayList;
 
 public class Script implements Visitable
@@ -10,12 +11,22 @@ public class Script implements Visitable
 	public final ArrayList<Statement> statements;
 	
 	private final GasRuntime runtime;
+	private final File file;
 	
-	public Script() {
+	public Script(File file) {
 		this.statements = new ArrayList<>();
 		this.runtime = new GasRuntime();
-		
+		this.file = file;
 		runtime.set("script", new ScriptValue(this));
+	}
+
+	public File getFile() {
+		return file;
+	}
+
+	public Script require(String directory) {
+		var file = new File(this.file.getParent() + directory);
+		return this;
 	}
 
 	public void add(Statement statement) {
