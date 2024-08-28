@@ -6,4 +6,4 @@ This programming language allows to script any program that involves Java code.
 print("Hello world!", "This is Gaslang!")
 ```
 
-This was created by me simply for fun and experience and has no purpose.
+This was created by me just for fun and experience and has no purpose.
