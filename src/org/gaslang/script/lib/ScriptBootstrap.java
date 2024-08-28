@@ -1,11 +1,7 @@
 package org.gaslang.script.lib;
 
-import java.lang.reflect.*;
-import java.net.URL;
-import java.util.*;
-
-import org.gaslang.script.*;
-import org.gaslang.script.api.ScriptModule;
+import org.gaslang.script.FunctionBlock;
+import org.gaslang.script.Value;
 import org.gaslang.script.lib.ScriptNativeType.InstanceCreator;
 import org.gaslang.script.lib.accessors.NonStrictAccessor;
 import org.gaslang.script.lib.accessors.StrictAccessor;
@@ -13,40 +9,80 @@ import org.gaslang.script.lib.annotation.GasFunction;
 import org.gaslang.script.lib.annotation.GasModule;
 import org.gaslang.script.lib.annotation.GasType;
 import org.gaslang.script.lib.annotation.GasVariable;
-import org.gaslang.script.lib.boot.MathModule;
-import org.gaslang.script.run.*;
 
-import static org.gaslang.script.api.ScriptAPI.*;
+import java.io.File;
+import java.io.FilenameFilter;
+import java.io.IOException;
+import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.net.URL;
+import java.nio.file.*;
+import java.security.CodeSource;
+import java.util.*;
+import java.util.stream.Stream;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipInputStream;
 
-import java.io.*;
-import java.lang.annotation.Annotation;
+import static org.gaslang.script.api.ScriptAPI.value;
 
 public class ScriptBootstrap
 {
-	public GasPackage loadPackage(String packageName) {
-		URL root = Thread.currentThread().getContextClassLoader().getResource(packageName.replace(".", "/"));
-		
-		File[] files = new File(root.getFile()).listFiles(new FilenameFilter() {
-		    public boolean accept(File dir, String name) {
-		        return name.endsWith(".class");
-		    }
-		});
-		
-		ArrayList<NativeObject> natives = new ArrayList<>();
-		
-		for (File file : files) {
-		    String className = file.getName().replaceAll(".class$", "");
-		    try {
-				Class<?> cls = Class.forName(packageName + "." + className);
-				//if (!cls.isAnnotationPresent(GasModule.class)) continue;
-				natives.add(registerClass(cls));
-			} catch (Exception e) {
-				e.printStackTrace();
+	public GasPackage loadPackage(String packageName)  {
+		var natives = new ArrayList<NativeObject>();
+
+		try {
+			var classes = getClassesForPackage(packageName);
+
+			for (var someClass : classes) {
+				try {
+					var gasObject = registerClass(someClass);
+					if (gasObject == null) continue;
+					natives.add(gasObject);
+				} catch (Exception e) {
+					throw new RuntimeException(e);
+				}
 			}
+
+		} catch (IOException | URISyntaxException e) {
+			throw new RuntimeException(e);
 		}
-		
+
 		return new GasPackage(natives);
 	}
+
+	public static List<Class<?>> getClassesForPackage(final String pkgName) throws IOException, URISyntaxException {
+		final String pkgPath = pkgName.replace('.', '/');
+		final URI pkg = Objects.requireNonNull(ClassLoader.getSystemClassLoader().getResource(pkgPath)).toURI();
+		final ArrayList<Class<?>> allClasses = new ArrayList<Class<?>>();
+
+		Path root;
+		if (pkg.toString().startsWith("jar:")) {
+			try {
+				root = FileSystems.getFileSystem(pkg).getPath(pkgPath);
+			} catch (final FileSystemNotFoundException e) {
+				root = FileSystems.newFileSystem(pkg, Collections.emptyMap()).getPath(pkgPath);
+			}
+		} else {
+			root = Paths.get(pkg);
+		}
+
+		final String extension = ".class";
+		try (final Stream<Path> allPaths = Files.walk(root)) {
+			allPaths.filter(Files::isRegularFile).forEach(file -> {
+				try {
+					var fileName = file.getFileName().toString();
+					allClasses.add(Class.forName(pkgName + "." + fileName.replaceAll(extension, "")));
+				} catch (final ClassNotFoundException | StringIndexOutOfBoundsException ignored) {
+					ignored.printStackTrace();
+				}
+			});
+		}
+		return allClasses;
+	}
+
 	public NativeObject registerClass(Class<?> type) throws Exception {
 
 		GasType gasTypeInfo = type.getDeclaredAnnotation(GasType.class);
@@ -58,24 +94,24 @@ public class ScriptBootstrap
 		GasModule moduleInfo = type.getDeclaredAnnotation(GasModule.class);
 		
 		if (moduleInfo != null) {
-			return registerModule(type.newInstance());
+			return registerModule(type.getDeclaredConstructor().newInstance());
 		}
 		
 		// If it was just a java class
 		return null;
 	}
 	
-	public ScriptNativeType registerType(Class<?> type) throws Exception {
+	public ScriptNativeType registerType(Class<?> type) {
 		
 		GasType gasTypeInfo = type.getDeclaredAnnotation(GasType.class);
 		
-		ScriptNativeType gasType = new ScriptNativeType(gasTypeInfo.name().equals("") ? type.getSimpleName() : gasTypeInfo.name(), type, gasTypeInfo.shared());
+		ScriptNativeType gasType = new ScriptNativeType(gasTypeInfo.name().isEmpty() ? type.getSimpleName() : gasTypeInfo.name(), type, gasTypeInfo.shared());
 		
 		InstanceCreator instanceCreator = () -> {
 			Object instance;
 			
 			try {
-				instance = type.newInstance();
+				instance = type.getDeclaredConstructor().newInstance();
 			} catch (Exception ex) {
 				throw new RuntimeException(ex);
 			}
@@ -112,7 +148,7 @@ public class ScriptBootstrap
 		
 		GasModule moduleInfo = type.getDeclaredAnnotation(GasModule.class);
 		
-		ScriptNativeModule module = new ScriptNativeModule(moduleInfo.name().equals("") ? type.getName() : moduleInfo.name(), moduleInfo.shared());
+		ScriptNativeModule module = new ScriptNativeModule(moduleInfo.name().isEmpty() ? type.getName() : moduleInfo.name(), moduleInfo.shared());
 		
 		for (Method method : type.getDeclaredMethods()) {
 			registerFunction(module, method, instance);
@@ -132,8 +168,8 @@ public class ScriptBootstrap
 		
 		GasVariable fieldInfo = field.getDeclaredAnnotation(GasVariable.class);
 
-		String fieldName = fieldInfo.name().equals("") ? field.getName() : fieldInfo.name();
-		Boolean isEditable = fieldInfo.editable();
+		String fieldName = fieldInfo.name().isEmpty() ? field.getName() : fieldInfo.name();
+		boolean isEditable = fieldInfo.editable();
 		
 		Value<?> fieldValue = value(field.get(instance));
 		field.setAccessible(true);
@@ -149,7 +185,7 @@ public class ScriptBootstrap
 		
 		GasFunction functionInfo = method.getDeclaredAnnotation(GasFunction.class);
 		
-		String functionName = functionInfo.name().equals("") ? method.getName() : functionInfo.name();
+		String functionName = functionInfo.name().isEmpty() ? method.getName() : functionInfo.name();
 		boolean isStrict = functionInfo.strict();
 		
 		method.setAccessible(true);

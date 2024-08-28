@@ -1,14 +1,14 @@
 package org.gaslang.script.lib.accessors;
 
-import static org.gaslang.script.api.ScriptAPI.NULL;
-import static org.gaslang.script.api.ScriptAPI.value;
+import org.gaslang.script.NullValue;
+import org.gaslang.script.Tuple;
+import org.gaslang.script.Value;
 
 import java.lang.reflect.Method;
 import java.lang.reflect.Type;
-import java.util.Arrays;
 
-import org.gaslang.script.*;
-import org.gaslang.script.run.*;
+import static org.gaslang.script.api.ScriptAPI.NULL;
+import static org.gaslang.script.api.ScriptAPI.value;
 
 public class NonStrictAccessor extends MethodAccessor
 {

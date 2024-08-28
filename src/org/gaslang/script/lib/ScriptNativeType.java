@@ -1,16 +1,11 @@
 package org.gaslang.script.lib;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-
 import org.gaslang.script.Arguments;
-import org.gaslang.script.ObjectValue;
 import org.gaslang.script.Tuple;
 import org.gaslang.script.Value;
-import org.gaslang.script.ValueType;
 import org.gaslang.script.api.ScriptType;
-import org.gaslang.script.run.GasRuntime;
+
+import java.util.ArrayList;
 
 public class ScriptNativeType extends ScriptType implements NativeObject
 {

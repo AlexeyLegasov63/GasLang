@@ -1,14 +1,6 @@
 package org.gaslang.script.lib;
 
-import java.util.*;
-
-import org.gaslang.script.FunctionBlock;
-import org.gaslang.script.NullValue;
-import org.gaslang.script.Tuple;
-import org.gaslang.script.Value;
-import org.gaslang.script.ValueType;
-import org.gaslang.script.ast.*;
-import org.gaslang.script.run.*;
+import org.gaslang.script.*;
 
 public class NativeFunctionValue extends Value<FunctionBlock>
 {

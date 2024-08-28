@@ -1,7 +1,5 @@
 package org.gaslang.script;
 
-import org.gaslang.script.api.ScriptModule;
-
 public class StringValue extends Value<String> implements PrimitiveValue
 {
 	public StringValue(String arg0) {

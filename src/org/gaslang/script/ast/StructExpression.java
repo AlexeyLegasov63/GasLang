@@ -1,13 +1,11 @@
 package org.gaslang.script.ast;
 
-import static org.gaslang.script.api.ScriptAPI.*;
+import org.gaslang.script.TableValue;
+import org.gaslang.script.Value;
+import org.gaslang.script.run.GasRuntime;
+import org.gaslang.script.visitor.Visitor;
 
-import java.util.*;
-
-import org.gaslang.script.*;
-import org.gaslang.script.parser.lexer.token.*;
-import org.gaslang.script.run.*;
-import org.gaslang.script.visitor.*;
+import static org.gaslang.script.api.ScriptAPI.struct;
 
 public class StructExpression extends TableExpression
 {

@@ -1,6 +1,9 @@
 package org.gaslang.script.ast;
 
-import org.gaslang.script.*;
+import org.gaslang.script.Annotations;
+import org.gaslang.script.Arguments;
+import org.gaslang.script.Expression;
+import org.gaslang.script.Statement;
 import org.gaslang.script.run.GasRuntime;
 import org.gaslang.script.visitor.Visitor;
 

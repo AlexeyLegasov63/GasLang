@@ -1,14 +1,12 @@
 package org.gaslang.script.visitor;
 
-import java.util.Arrays;
-import java.util.Objects;
-
-import org.gaslang.script.Argument;
-import org.gaslang.script.Expression;
 import org.gaslang.script.Script;
 import org.gaslang.script.api.ScriptAPI.StackSpace;
 import org.gaslang.script.ast.*;
 import org.gaslang.script.parser.lexer.token.TokenType;
+
+import java.util.Arrays;
+import java.util.Objects;
 
 public class SourceDrawer extends AbstractVisitor
 {

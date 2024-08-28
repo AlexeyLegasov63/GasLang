@@ -1,11 +1,11 @@
 package org.gaslang.script.lib.boot;
 
-import java.io.FileInputStream;
-import java.io.IOException;
-
-import org.gaslang.script.lib.*;
+import org.gaslang.script.lib.ScriptNativeObject;
 import org.gaslang.script.lib.annotation.GasFunction;
 import org.gaslang.script.lib.annotation.GasType;
+
+import java.io.FileInputStream;
+import java.io.IOException;
 
 @GasType
 public class FileReader

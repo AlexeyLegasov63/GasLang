@@ -1,15 +1,12 @@
 package org.gaslang.script.lib;
 
-import java.util.HashMap;
-
-import org.gaslang.script.Arguments;
 import org.gaslang.script.ObjectValue;
 import org.gaslang.script.Tuple;
 import org.gaslang.script.Value;
-import org.gaslang.script.ValueType;
 import org.gaslang.script.api.ScriptType;
 import org.gaslang.script.exception.ValueMatchingTypeError;
-import org.gaslang.script.run.GasRuntime;
+
+import java.util.HashMap;
 
 public class ScriptNativeObject extends ObjectValue implements NativeObject
 {

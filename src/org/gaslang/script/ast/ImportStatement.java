@@ -1,8 +1,11 @@
 package org.gaslang.script.ast;
 
-import org.gaslang.script.*;
-import org.gaslang.script.run.*;
-import org.gaslang.script.visitor.*;
+import org.gaslang.script.GasScript;
+import org.gaslang.script.Script;
+import org.gaslang.script.ScriptValue;
+import org.gaslang.script.Statement;
+import org.gaslang.script.run.GasRuntime;
+import org.gaslang.script.visitor.Visitor;
 
 public class ImportStatement implements Statement
 {

@@ -1,10 +1,11 @@
 package org.gaslang.script.api;
 
-import static org.gaslang.script.api.ScriptAPI.*;
+import org.gaslang.script.Value;
+import org.gaslang.script.ValueType;
 
 import java.util.HashMap;
 
-import org.gaslang.script.*;
+import static org.gaslang.script.api.ScriptAPI.string;
 
 public class ScriptModule extends Value<HashMap<String, Value<?>>>
 {

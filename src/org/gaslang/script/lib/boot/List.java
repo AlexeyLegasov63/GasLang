@@ -1,13 +1,14 @@
 package org.gaslang.script.lib.boot;
 
-import static org.gaslang.script.api.ScriptAPI.*;
+import org.gaslang.script.FunctionValue;
+import org.gaslang.script.Tuple;
+import org.gaslang.script.Value;
+import org.gaslang.script.lib.annotation.GasFunction;
+import org.gaslang.script.lib.annotation.GasType;
 
-import java.util.*;
-import java.util.function.Predicate;
+import java.util.ArrayList;
 
-import org.gaslang.script.*;
-import org.gaslang.script.lib.*;
-import org.gaslang.script.lib.annotation.*;
+import static org.gaslang.script.api.ScriptAPI.tuple;
 
 @GasType
 public class List

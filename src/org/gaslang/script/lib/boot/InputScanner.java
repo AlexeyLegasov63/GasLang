@@ -1,11 +1,11 @@
 package org.gaslang.script.lib.boot;
 
-import java.io.*;
-import java.util.*;
-
-import org.gaslang.script.lib.*;
 import org.gaslang.script.lib.annotation.GasFunction;
 import org.gaslang.script.lib.annotation.GasType;
+
+import java.io.InputStream;
+import java.util.Optional;
+import java.util.Scanner;
 
 @GasType
 public class InputScanner

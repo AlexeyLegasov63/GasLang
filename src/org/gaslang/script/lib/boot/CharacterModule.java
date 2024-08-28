@@ -1,7 +1,5 @@
 package org.gaslang.script.lib.boot;
 
-import static org.gaslang.script.api.ScriptAPI.*;
-
 import org.gaslang.script.lib.annotation.GasFunction;
 import org.gaslang.script.lib.annotation.GasModule;
 

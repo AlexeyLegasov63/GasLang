@@ -1,8 +1,8 @@
 package org.gaslang.script.lib;
 
-import java.lang.reflect.*;
+import org.gaslang.script.Value;
 
-import org.gaslang.script.*;
+import java.lang.reflect.Field;
 
 public class NativeFieldValue extends Value<Value<?>>
 {

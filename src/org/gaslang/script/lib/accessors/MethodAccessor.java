@@ -1,19 +1,16 @@
 package org.gaslang.script.lib.accessors;
 
-import static org.gaslang.script.api.ScriptAPI.NULL;
-import static org.gaslang.script.api.ScriptAPI.value;
+import org.gaslang.script.FunctionBlock;
+import org.gaslang.script.Value;
+import org.gaslang.script.ValueType;
+import org.gaslang.script.exception.ValueMatchingTypeError;
 
 import java.lang.reflect.Method;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.Optional;
 
-import org.gaslang.script.FunctionBlock;
-import org.gaslang.script.Tuple;
-import org.gaslang.script.Value;
-import org.gaslang.script.ValueType;
-import org.gaslang.script.exception.ValueMatchingTypeError;
-import org.gaslang.script.run.GasRuntime;
+import static org.gaslang.script.api.ScriptAPI.NULL;
 
 abstract class MethodAccessor implements FunctionBlock
 {

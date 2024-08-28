@@ -1,13 +1,13 @@
 package org.gaslang.script.lib.boot;
 
-import static org.gaslang.script.api.ScriptAPI.*;
+import org.gaslang.script.*;
+import org.gaslang.script.lib.annotation.GasFunction;
+import org.gaslang.script.lib.annotation.GasModule;
+import org.gaslang.script.lib.array.StrictArrayValue;
 
 import java.util.Optional;
 
-import org.gaslang.script.*;
-import org.gaslang.script.lib.*;
-import org.gaslang.script.lib.annotation.*;
-import org.gaslang.script.lib.boot.array.StrictArrayValue;
+import static org.gaslang.script.api.ScriptAPI.*;
 
 @GasModule(name = "array")
 public class ArrayModule

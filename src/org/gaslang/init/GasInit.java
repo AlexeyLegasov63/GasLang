@@ -5,7 +5,6 @@ import org.gaslang.script.api.ScriptAPI;
 
 import java.util.Arrays;
 import java.util.HashSet;
-import java.util.Properties;
 
 public class GasInit
 {
@@ -19,7 +18,10 @@ public class GasInit
 			case "-c": {
 				new ScriptAPI();
 				var scriptName = args[1];
-				var options = new HashSet<String>(Arrays.asList(args).subList(2, args.length-1));
+				var options = new HashSet<String>();
+				if (args.length >= 3) {
+					options.addAll(Arrays.asList(args).subList(2, args.length - 1));
+				}
 				GasScript.loadScript(scriptName, options);
 				return;
 			}

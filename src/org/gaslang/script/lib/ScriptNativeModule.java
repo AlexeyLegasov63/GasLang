@@ -1,7 +1,8 @@
 package org.gaslang.script.lib;
 
-import org.gaslang.script.*;
-import org.gaslang.script.api.*;
+import org.gaslang.script.Value;
+import org.gaslang.script.ValueType;
+import org.gaslang.script.api.ScriptModule;
 import org.gaslang.script.run.GasRuntime;
 
 public class ScriptNativeModule	extends ScriptModule implements NativeObject

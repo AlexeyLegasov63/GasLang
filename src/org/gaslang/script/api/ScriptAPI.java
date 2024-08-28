@@ -1,20 +1,18 @@
 package org.gaslang.script.api;
 
-import static org.gaslang.script.NullValue.NIL_VALUE;
-
-import java.lang.reflect.Array;
-import java.util.*;
-import java.util.function.Predicate;
-
 import org.gaslang.script.*;
-import org.gaslang.script.ast.*;
-import org.gaslang.script.lib.NativeFunctionValue;
 import org.gaslang.script.lib.GasPackage;
+import org.gaslang.script.lib.NativeFunctionValue;
 import org.gaslang.script.lib.ScriptBootstrap;
-import org.gaslang.script.lib.ScriptNativeModule;
 import org.gaslang.script.parser.lexer.token.TokenType;
 import org.gaslang.script.run.GasRuntime;
-import org.gaslang.script.visitor.Visitor;
+
+import java.lang.reflect.Array;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+
+import static org.gaslang.script.NullValue.NIL_VALUE;
 
 public class ScriptAPI
 {
@@ -123,7 +121,7 @@ public class ScriptAPI
 		this.types = new ArrayList<>();
 		this.gasPackageLoader = new ScriptBootstrap();
 
-		SCRIPT_API = new ScriptAPI();
+		SCRIPT_API = this;
 
 		registerPackage(("org.gaslang.script.lib.boot"));
 	}

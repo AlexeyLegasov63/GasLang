@@ -1,10 +1,9 @@
 package org.gaslang.script;
 
-import java.util.ArrayList;
-
-import org.gaslang.script.ast.*;
-import org.gaslang.script.run.*;
+import org.gaslang.script.run.GasRuntime;
 import org.gaslang.script.visitor.Visitor;
+
+import java.util.ArrayList;
 
 public class Script implements Visitable
 {

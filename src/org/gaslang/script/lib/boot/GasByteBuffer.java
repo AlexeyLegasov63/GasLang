@@ -1,11 +1,10 @@
 package org.gaslang.script.lib.boot;
 
-import java.nio.ByteBuffer;
-import java.util.Optional;
-
-import org.gaslang.script.lib.*;
 import org.gaslang.script.lib.annotation.GasFunction;
 import org.gaslang.script.lib.annotation.GasType;
+
+import java.nio.ByteBuffer;
+import java.util.Optional;
 
 @GasType(name = "ByteBuffer")
 public class GasByteBuffer

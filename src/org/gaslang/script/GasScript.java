@@ -1,15 +1,13 @@
 package org.gaslang.script;
 
-import java.io.File;
-import java.util.HashMap;
-import java.util.HashSet;
-
-import org.gaslang.script.api.ScriptAPI;
 import org.gaslang.script.ast.parser.FileParser;
 import org.gaslang.script.parser.lexer.FileLexer;
 import org.gaslang.script.parser.lexer.io.SourceReader;
-import org.gaslang.script.visitor.AsmDrawer;
 import org.gaslang.script.visitor.SourceDrawer;
+
+import java.io.File;
+import java.util.HashMap;
+import java.util.HashSet;
 
 public class GasScript
 {

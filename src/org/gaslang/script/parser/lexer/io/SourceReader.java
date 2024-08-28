@@ -1,10 +1,8 @@
 package org.gaslang.script.parser.lexer.io;
 
-import java.io.*;
-import java.nio.*;
-import java.nio.channels.*;
-import java.nio.charset.*;
-import java.util.Properties;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
 
 public class SourceReader
 {

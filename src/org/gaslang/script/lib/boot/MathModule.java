@@ -1,15 +1,14 @@
 package org.gaslang.script.lib.boot;
 
-import static org.gaslang.script.api.ScriptAPI.*;
+import org.gaslang.script.NumberValue;
+import org.gaslang.script.lib.annotation.GasFunction;
+import org.gaslang.script.lib.annotation.GasModule;
+import org.gaslang.script.lib.annotation.GasVariable;
 
 import java.util.Optional;
 import java.util.Random;
 
-import org.gaslang.script.*;
-import org.gaslang.script.lib.*;
-import org.gaslang.script.lib.annotation.GasFunction;
-import org.gaslang.script.lib.annotation.GasModule;
-import org.gaslang.script.lib.annotation.GasVariable;
+import static org.gaslang.script.api.ScriptAPI.number;
 
 @GasModule(name = "math")
 public class MathModule

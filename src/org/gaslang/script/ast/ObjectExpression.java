@@ -1,12 +1,11 @@
 package org.gaslang.script.ast;
 
-import java.util.ArrayList;
-
 import org.gaslang.script.*;
 import org.gaslang.script.api.ScriptType;
-import org.gaslang.script.parser.lexer.token.*;
-import org.gaslang.script.run.*;
-import org.gaslang.script.visitor.*;
+import org.gaslang.script.run.GasRuntime;
+import org.gaslang.script.visitor.Visitor;
+
+import java.util.ArrayList;
 
 public class ObjectExpression implements Expression
 {
@@ -24,9 +23,16 @@ public class ObjectExpression implements Expression
 
 	@Override
 	public Value<?> eval(GasRuntime gr) {
-		Tuple masks = (Tuple) this.masks.eval(gr);
-		masks.assertTypes(ValueType.MASK);
-		return new ScriptType(name, annotations.getAnnotations(gr), masks.getValuesAs(), arguments);
+		ArrayList<MaskValue> masks;
+		if (this.masks != null) {
+			Tuple masksTuple = (Tuple) this.masks.eval(gr);
+			masksTuple.assertTypes(ValueType.MASK);
+			masks = masksTuple.getValuesAs();
+		}
+		else {
+			masks = new ArrayList<>();
+		}
+		return new ScriptType(name, annotations.getAnnotations(gr), masks, arguments);
 	}
 	
 	@Override

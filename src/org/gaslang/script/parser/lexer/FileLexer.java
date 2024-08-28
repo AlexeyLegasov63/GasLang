@@ -1,14 +1,17 @@
 package org.gaslang.script.parser.lexer;
 
-import java.io.*;
-import java.util.*;
-
-import org.gaslang.script.*;
-import org.gaslang.script.ast.parser.*;
-import org.gaslang.script.parser.lexer.error.*;
+import org.gaslang.script.ast.parser.FileParser;
+import org.gaslang.script.parser.lexer.error.LexerError;
 import org.gaslang.script.parser.lexer.token.*;
 
-import static java.lang.Character.*;
+import java.io.File;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.HashSet;
+
+import static java.lang.Character.isDigit;
+import static java.lang.Character.isLetter;
 
 public class FileLexer {
 	private static final HashSet<Character> OPERATOR_CHARACTERS;

@@ -1,10 +1,8 @@
 package org.gaslang.script;
 
-import java.util.HashMap;
-
-import org.gaslang.script.api.ScriptAPI;
 import org.gaslang.script.api.ScriptType;
-import org.gaslang.script.ast.IndexExpression;
+
+import java.util.HashMap;
 
 public class ObjectValue extends Value<HashMap<String, Value<?>>> implements PrimitiveValue
 {

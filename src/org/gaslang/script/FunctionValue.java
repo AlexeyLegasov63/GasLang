@@ -1,10 +1,7 @@
 package org.gaslang.script;
 
-import java.util.*;
-
-import org.gaslang.script.api.ScriptAPI;
-import org.gaslang.script.ast.*;
-import org.gaslang.script.run.*;
+import org.gaslang.script.ast.ReturnStatement;
+import org.gaslang.script.run.GasRuntime;
 
 public class FunctionValue extends Value<Statement>
 {

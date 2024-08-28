@@ -1,0 +1,8 @@
+<component name="ArtifactManager">
+  <artifact type="jar" name="GasLang:jar">
+    <output-path>$PROJECT_DIR$/out/artifacts/GasLang_jar</output-path>
+    <root id="archive" name="GasLang.jar">
+      <element id="module-output" name="GasLang" />
+    </root>
+  </artifact>
+</component>

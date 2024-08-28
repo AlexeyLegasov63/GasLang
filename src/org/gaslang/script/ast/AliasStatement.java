@@ -1,7 +1,5 @@
 package org.gaslang.script.ast;
 
-import java.util.ArrayList;
-
 import org.gaslang.script.*;
 import org.gaslang.script.run.GasRuntime;
 import org.gaslang.script.visitor.Visitor;

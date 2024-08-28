@@ -1,6 +1,7 @@
 package org.gaslang.script.visitor;
 
-import org.gaslang.script.*;
+import org.gaslang.script.Expression;
+import org.gaslang.script.Statement;
 import org.gaslang.script.ast.*;
 
 public abstract class AbstractVisitor implements Visitor

@@ -1,12 +1,12 @@
 package org.gaslang.script;
 
-import static org.gaslang.script.ValueType.*;
-
-import java.util.*;
-
-import org.gaslang.script.api.*;
+import org.gaslang.script.api.ScriptAPI;
+import org.gaslang.script.api.ScriptModule;
 import org.gaslang.script.exception.ValueMatchingTypeError;
-import org.gaslang.script.run.*;
+
+import java.util.Objects;
+
+import static org.gaslang.script.ValueType.OBJECT;
 
 public abstract class Value<T>
 {

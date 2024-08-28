@@ -1,10 +1,14 @@
 package org.gaslang.script.ast;
 
-import java.util.*;
+import org.gaslang.script.ArrayValue;
+import org.gaslang.script.Expression;
+import org.gaslang.script.Tuple;
+import org.gaslang.script.Value;
+import org.gaslang.script.run.GasRuntime;
+import org.gaslang.script.visitor.Visitor;
 
-import org.gaslang.script.*;
-import org.gaslang.script.run.*;
-import org.gaslang.script.visitor.*;
+import java.util.ArrayList;
+import java.util.HashMap;
 
 public class ArrayExpression implements Expression
 {

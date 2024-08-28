@@ -1,10 +1,10 @@
 package org.gaslang.script.ast;
 
-import java.util.*;
-
-import org.gaslang.script.*;
-import org.gaslang.script.run.*;
+import org.gaslang.script.Statement;
+import org.gaslang.script.run.GasRuntime;
 import org.gaslang.script.visitor.Visitor;
+
+import java.util.ArrayList;
 
 public class BlockStatement implements Statement
 {

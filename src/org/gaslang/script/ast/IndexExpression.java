@@ -1,9 +1,11 @@
 package org.gaslang.script.ast;
 
-import org.gaslang.script.*;
-import org.gaslang.script.parser.lexer.token.*;
-import org.gaslang.script.run.*;
-import org.gaslang.script.visitor.*;
+import org.gaslang.script.Accessible;
+import org.gaslang.script.Expression;
+import org.gaslang.script.Value;
+import org.gaslang.script.ValueType;
+import org.gaslang.script.run.GasRuntime;
+import org.gaslang.script.visitor.Visitor;
 
 public class IndexExpression implements Expression, Accessible
 {

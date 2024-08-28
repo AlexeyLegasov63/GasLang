@@ -1,19 +1,24 @@
 package org.gaslang.script.ast.parser;
 
-import static org.gaslang.script.NullValue.NIL_VALUE;
-import static org.gaslang.script.parser.lexer.token.TokenType.*;
-
-import java.io.*;
-import java.util.*;
-
 import org.gaslang.script.*;
-import org.gaslang.script.api.ScriptAPI;
-import org.gaslang.script.api.ScriptAPI.*;
+import org.gaslang.script.api.ScriptAPI.BinaryOperator;
+import org.gaslang.script.api.ScriptAPI.ConditionalyOperator;
+import org.gaslang.script.api.ScriptAPI.StackSpace;
+import org.gaslang.script.api.ScriptAPI.UnaryOperator;
 import org.gaslang.script.ast.*;
-import org.gaslang.script.parser.lexer.error.*;
-import org.gaslang.script.parser.lexer.token.*;
+import org.gaslang.script.parser.lexer.error.ParserError;
+import org.gaslang.script.parser.lexer.token.Literal;
+import org.gaslang.script.parser.lexer.token.Token;
+import org.gaslang.script.parser.lexer.token.TokenType;
 import org.gaslang.script.run.GasRuntime;
 import org.gaslang.script.visitor.Visitor;
+
+import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
+
+import static org.gaslang.script.NullValue.NIL_VALUE;
+import static org.gaslang.script.parser.lexer.token.TokenType.*;
 
 public class FileParser
 {

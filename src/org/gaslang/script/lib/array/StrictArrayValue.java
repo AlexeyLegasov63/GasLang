@@ -1,11 +1,11 @@
-package org.gaslang.script.lib.boot.array;
+package org.gaslang.script.lib.array;
 
-import static org.gaslang.script.api.ScriptAPI.*;
+import org.gaslang.script.Array;
+import org.gaslang.script.BooleanValue;
+import org.gaslang.script.Value;
+import org.gaslang.script.ValueType;
 
-import java.util.*;
-
-import org.gaslang.script.*;
-import org.gaslang.script.Iterable;
+import java.util.HashMap;
 
 public class StrictArrayValue extends Value<Value<?>[]> implements Array
 {

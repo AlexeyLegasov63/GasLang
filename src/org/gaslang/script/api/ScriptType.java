@@ -1,17 +1,9 @@
 package org.gaslang.script.api;
 
+import org.gaslang.script.*;
+
 import java.util.ArrayList;
 import java.util.HashMap;
-
-import org.gaslang.script.Annotations;
-import org.gaslang.script.Arguments;
-import org.gaslang.script.MaskValue;
-import org.gaslang.script.NullValue;
-import org.gaslang.script.ObjectValue;
-import org.gaslang.script.Tuple;
-import org.gaslang.script.Value;
-import org.gaslang.script.ValueType;
-import org.gaslang.script.run.GasRuntime;
 
 public class ScriptType extends Value<HashMap<String, Value<?>>>
 {
