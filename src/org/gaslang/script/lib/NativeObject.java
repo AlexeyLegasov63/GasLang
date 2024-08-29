@@ -5,4 +5,8 @@ import org.gaslang.script.Value;
 public interface NativeObject
 {
 	void set(String name, Value<?> value);
+
+	default String name() {
+		return "";
+	}
 }

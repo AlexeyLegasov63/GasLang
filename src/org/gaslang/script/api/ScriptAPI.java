@@ -16,7 +16,7 @@ import static org.gaslang.script.NullValue.NIL_VALUE;
 
 public class ScriptAPI
 {
-	public static final StringValue VERSION = string("1.0");
+	public static final StringValue VERSION = string("1.1");
 	
 	public static ScriptAPI SCRIPT_API;
 	
@@ -30,7 +30,7 @@ public class ScriptAPI
 		return new NativeFunctionValue(block);
 	}
 	public static NativeFunctionValue function(String name, FunctionBlock block) {
-		return new NativeFunctionValue(name, block);
+		return new NativeFunctionValue("", name, block);
 	}
 	
 	public static void struct(TableValue data, String signature) {

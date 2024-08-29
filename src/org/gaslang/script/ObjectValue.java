@@ -11,6 +11,8 @@ public class ObjectValue extends Value<HashMap<String, Value<?>>> implements Pri
 	public ObjectValue(HashMap<String, Value<?>> value, ScriptType typeInstance) {
 		super(value);
 		this.typeInstance = typeInstance;
+
+		tryCallFunction("awake");
 	}
 	
 	public ScriptType getType() {
@@ -121,6 +123,9 @@ public class ObjectValue extends Value<HashMap<String, Value<?>>> implements Pri
 	
 	@Override
 	public String asString() {
+		if (!jValue().containsKey("toString")) {
+			return typeInstance.getName() + "@" + Integer.toHexString(jValue().hashCode());
+		}
 		return tryCallFunction("toString").asString();
 	}
 	

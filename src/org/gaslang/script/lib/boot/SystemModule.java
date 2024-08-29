@@ -11,5 +11,11 @@ public class SystemModule
 	public void exit(Integer code) {
 		System.exit(code);
 	}
-	
+
+
+	@GasFunction
+	public Long time() {
+		return System.currentTimeMillis();
+	}
+
 }

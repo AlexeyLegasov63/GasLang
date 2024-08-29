@@ -13,8 +13,6 @@ public class GasScript
 {
 	private static final HashMap<String, Script> CACHED_SCRIPTS = new HashMap<>();
 
-	private static final String ROOT_DIRECTORY = "";
-
 	public static Script loadScript(String fileName) {
 		return loadScript(fileName, new HashSet<>());
 	}
@@ -22,7 +20,7 @@ public class GasScript
 	public static Script loadScript(String fileName, HashSet<String> options) {
 		if (CACHED_SCRIPTS.containsKey(fileName)) return CACHED_SCRIPTS.get(fileName);
 
-		String fileDirectory = String.format("%s%s.gs", ROOT_DIRECTORY, fileName);
+		String fileDirectory = String.format("%s.gs", fileName);
 		
 		File file = new File(fileDirectory);
 		

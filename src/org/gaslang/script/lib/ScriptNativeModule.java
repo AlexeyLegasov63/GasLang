@@ -7,7 +7,7 @@ import org.gaslang.script.run.GasRuntime;
 
 public class ScriptNativeModule	extends ScriptModule implements NativeObject
 {
-	private boolean isShared;
+	private final boolean isShared;
 	
 	public ScriptNativeModule(String name, boolean shared) {
 		super(name);
@@ -29,8 +29,7 @@ public class ScriptNativeModule	extends ScriptModule implements NativeObject
 		
 		Value<?> value = jValue().get(arg0.asString());
 		
-		if (value instanceof NativeFieldValue) {
-			NativeFieldValue field = (NativeFieldValue)value;
+		if (value instanceof NativeFieldValue field) {
 			field.set(arg1);
 			return arg1;
 		}
@@ -44,11 +43,15 @@ public class ScriptNativeModule	extends ScriptModule implements NativeObject
 		
 		Value<?> value = jValue().get(arg0.asString());
 		
-		if (value instanceof NativeFieldValue) {
-			NativeFieldValue field = (NativeFieldValue)value;
+		if (value instanceof NativeFieldValue field) {
 			return field.get();
 		}
 		
 		return value;
+	}
+
+	@Override
+	public String name() {
+		return super.getName();
 	}
 }

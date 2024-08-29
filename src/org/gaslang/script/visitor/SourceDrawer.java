@@ -141,7 +141,7 @@ public class SourceDrawer extends AbstractVisitor
 		write("function");
 		if (functionExpression.isInstanceFunction) write(':');
 		write('(');
-		functionExpression.arguments.forEach(arg -> write(arg.getName()));
+		functionExpression.arguments.forEach(arg -> write(arg.name()));
 		write(") ");
 		functionExpression.statement.accept(this);
 	}
@@ -295,7 +295,7 @@ public class SourceDrawer extends AbstractVisitor
 		objectExpression.annotations.accept(this);
 		write("object ", objectExpression.name, '(');
 		objectExpression.arguments.forEach(arg -> {
-			write(arg.getName(), "; ");
+			write(arg.name(), "; ");
 		});
 		write(") wears ");
 		objectExpression.masks.accept(this);

@@ -3,7 +3,7 @@ package org.gaslang.script;
 import org.gaslang.script.ast.ReturnStatement;
 import org.gaslang.script.run.GasRuntime;
 
-public class FunctionValue extends Value<Statement>
+public class FunctionValue extends Value<Statement> implements Annotated
 {
 	public final GasRuntime localStack;
 	private final String functionName;
@@ -24,7 +24,7 @@ public class FunctionValue extends Value<Statement>
 		int arg = 0, arguments = args.getSize();
 		
 		for (int par = 0, params = functionArguments.getLength(); par < params; par++) {
-			var argumentName = functionArguments.getArguments().get(par).getName();
+			var argumentName = functionArguments.getArguments().get(par).name();
 
 			Value<?> argumentValue;
 			
@@ -73,6 +73,7 @@ public class FunctionValue extends Value<Statement>
 		return functionName;
 	}
 
+	@Override
 	public Annotations getAnnotations() {
 		return functionAnnotations;
 	}

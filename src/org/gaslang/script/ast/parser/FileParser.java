@@ -101,7 +101,7 @@ public class FileParser
 		
 		Expression expression = assign();
 		
-		if (!(expression instanceof DefineFieldExpression || expression instanceof CallExpression)) throw report("Uknown statement: " + expression.getClass());
+		if (!(expression instanceof DefineFieldExpression || expression instanceof CallExpression)) throw report("Uknown statement: " + expression.getClass().getTypeName());
 		
 		return new EvalStatement(expression);
 	}
@@ -502,16 +502,19 @@ public class FileParser
 	}
 	private Statement parseImport() {
 		consume(IMPORT);
-		StringBuffer buffer = new StringBuffer();
-		
-		buffer.append(consumeWord());
+		StringBuilder buffer = new StringBuilder();
+
+		String lastWord = consumeWord();
+
+		buffer.append(lastWord);
 		
 		while (match(DOT)) {
-			buffer.append(".");
-			buffer.append(consumeWord());
+			buffer.append("/");
+			lastWord = consumeWord();
+			buffer.append(lastWord);
 		}
 		
-		String aliasName = match(AS) ? consumeWord() : null;
+		String aliasName = match(AS) ? consumeWord() : lastWord;
 		
 		return new ImportStatement(buffer.toString(), aliasName);
 	}
@@ -540,13 +543,16 @@ public class FileParser
 			consume(AT);
 			String name = consumeWord();
 			
-			Expression annotationArgument = match(LPAREN) ? expression() : NIL_EXPRESSION;
-			
-			if (annotationArgument != null) consume(RPAREN);
-			
+			Expression annotationArgument;
+
+			if (match(LPAREN) && !match(RPAREN)) {
+				annotationArgument = expression();
+				consume(RPAREN);
+			} else {
+				annotationArgument = NIL_EXPRESSION;
+			}
+
 			expr.add(name, annotationArgument);
-			
-			
 		} while(match(COMMA));
 		return expr;
 	}
@@ -581,7 +587,7 @@ public class FileParser
 		Nodes expr = new Nodes();
 		do {
 			Expression key = parseNodeKey();
-			consume(EQ);
+			if (!match(COLON)) consume(EQ);
 			expr.add(key, expression());
 		} while(match(COMMA));
 		return expr;

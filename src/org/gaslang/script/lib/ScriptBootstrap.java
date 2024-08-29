@@ -187,7 +187,7 @@ public class ScriptBootstrap
 				new StrictAccessor(method, instance) 
 				: new NonStrictAccessor(method, instance);
 
-		NativeFunctionValue gasFunction = new NativeFunctionValue(accessor);
+		NativeFunctionValue gasFunction = new NativeFunctionValue(container.name(), method.getName(), accessor);
 		
 		container.set(functionName, gasFunction);
 	}

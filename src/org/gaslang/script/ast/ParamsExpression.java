@@ -12,7 +12,7 @@ public class ParamsExpression implements Expression
 		Value<?> paramsOffcut = gr.get("$");
 		
 		if (paramsOffcut == null) {
-			throw new RuntimeException();
+			throw new RuntimeException("There's no free params");
 		}
 		
 		return paramsOffcut;

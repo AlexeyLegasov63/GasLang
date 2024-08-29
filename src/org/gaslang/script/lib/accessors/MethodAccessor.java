@@ -70,4 +70,15 @@ abstract class MethodAccessor implements FunctionBlock
 		}
 		throw new RuntimeException(String.format("%s %s", jValueObject, requestedType));
 	}
+
+	@Override
+	public String desiredArgs() {
+		var len = argumentsTypes.length;
+		var args = new StringBuilder();
+		for (int i = 0; i < len; i++) {
+			if (i != 0) args.append(", ");
+			args.append(argumentsTypes[i].getSimpleName().toLowerCase());
+		}
+		return args.toString();
+	}
 }

@@ -23,7 +23,7 @@ public class AnnotationsExpression implements Visitable
 	public Annotations getAnnotations(GasRuntime gr) {
 		Annotations values = new Annotations();
 		for (String expr : nodes.keySet()) {
-			values.getAnnotations().add(new Annotation(expr, nodes.get(expr).eval(gr)));
+			values.getAnnotations().put(expr, new Annotation(expr, nodes.get(expr).eval(gr)));
 		}
 		return values;
 	}

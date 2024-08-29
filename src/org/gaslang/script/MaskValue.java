@@ -2,7 +2,7 @@ package org.gaslang.script;
 
 import java.util.ArrayList;
 
-public class MaskValue extends Value<String>
+public class MaskValue extends Value<String> implements Annotated
 {
 	private final Annotations annotations;
 	
@@ -11,7 +11,7 @@ public class MaskValue extends Value<String>
 		this.annotations = annotations;
 	}
 
-	public ArrayList<Annotation> getAnnotations() {
-		return annotations.getAnnotations();
+	public Annotations getAnnotations() {
+		return annotations;
 	}
 }

@@ -18,7 +18,11 @@ public class ScriptValue extends Value<Script>
 		arg0.matchValueTypeOrThrow(ValueType.STRING);
 		return jValue().get(arg0.asString());
 	}
-	
-	
+
+
+	@Override
+	public String asString() {
+		return "script";
+	}
 	
 }
