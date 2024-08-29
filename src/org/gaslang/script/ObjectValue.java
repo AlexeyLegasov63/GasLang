@@ -12,7 +12,7 @@ public class ObjectValue extends Value<HashMap<String, Value<?>>> implements Pri
 		super(value);
 		this.typeInstance = typeInstance;
 
-		tryCallFunctionIfExists("awake");
+		tryCallFunctionIfExists("construct");
 	}
 	
 	public ScriptType getType() {
