@@ -93,9 +93,6 @@ public class StackExpression implements Expression, Accessible
 
 	@Override
 	public String toString() {
-		return "StackExpression{" +
-				"space=" + space +
-				", token=" + token +
-				'}';
+		return token.getLiteral();
 	}
 }

@@ -12,7 +12,7 @@ public class ObjectValue extends Value<HashMap<String, Value<?>>> implements Pri
 		super(value);
 		this.typeInstance = typeInstance;
 
-		tryCallFunction("awake");
+		tryCallFunctionIfExists("awake");
 	}
 	
 	public ScriptType getType() {
@@ -38,7 +38,14 @@ public class ObjectValue extends Value<HashMap<String, Value<?>>> implements Pri
 		
 		return value;
 	}
-	
+	private <T extends Value<?>> void tryCallFunctionIfExists(String functionName, Value<?>... values) {
+		if (!jValue().containsKey("toString")) {
+			//throw new RuntimeException("There's no such bind: " + typeInstance.getName());
+			return;
+		}
+		tryCallFunction(functionName, values);
+	}
+
 	private <T extends Value<?>> T tryCallFunction(String functionName, Value<?>... values) {
 		Value<?> function = typeInstance.jValue().get(functionName);
 		

@@ -48,4 +48,9 @@ public class IndexExpression implements Expression, Accessible
 		Value<?> value = expression2.eval(gr);
 		return value.matchValueType(ValueType.STRING) ? value.asString() : null;
 	}
+
+	@Override
+	public String toString() {
+		return expression1 + "[" + expression2 + "]";
+	}
 }

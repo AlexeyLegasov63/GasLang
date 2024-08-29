@@ -1,7 +1,9 @@
 package org.gaslang.init;
 
 import org.gaslang.script.GasScript;
+import org.gaslang.script.ValueType;
 import org.gaslang.script.api.ScriptAPI;
+import static org.gaslang.script.api.ScriptAPI.*;
 
 import java.util.Arrays;
 import java.util.HashSet;
@@ -20,9 +22,15 @@ public class GasInit
 				var scriptName = args[1];
 				var options = new HashSet<String>();
 				if (args.length >= 3) {
-					options.addAll(Arrays.asList(args).subList(2, args.length - 1));
+					options.addAll(Arrays.asList(args).subList(2, args.length));
 				}
-				GasScript.loadScript(scriptName, options);
+				var mainScript = GasScript.loadScript(scriptName, options);
+				var mainFunction = mainScript.get("main");
+				if (mainFunction != null) {
+					mainFunction.matchValueTypeOrThrow(ValueType.FUNCTION);
+					mainFunction.call(tuple(array(options.toArray(new String[0]))));
+				}
+
 				return;
 			}
 			case "-v": {

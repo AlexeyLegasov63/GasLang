@@ -46,9 +46,6 @@ public class CallExpression implements Expression
 
 	@Override
 	public String toString() {
-		return "CallExpression{" +
-				"value=" + value +
-				", expression=" + expression +
-				'}';
+		return value + "(" + expression + ")";
 	}
 }

@@ -4,6 +4,7 @@ import org.gaslang.script.*;
 import org.gaslang.script.lib.GasPackage;
 import org.gaslang.script.lib.NativeFunctionValue;
 import org.gaslang.script.lib.ScriptBootstrap;
+import org.gaslang.script.lib.ScriptNativeType;
 import org.gaslang.script.parser.lexer.token.TokenType;
 import org.gaslang.script.run.GasRuntime;
 
@@ -39,6 +40,11 @@ public class ScriptAPI
 	}
 	public static Tuple tuple(Value<?>... value) {
 		return new Tuple(new ArrayList<>(Arrays.asList(value)));
+	}
+	public static <T> ScriptNativeType<T> instance(Class<T> type, Value<?>... args) {
+		return (ScriptNativeType<T>) SCRIPT_API
+				.getType(type)
+				.call(Tuple.valueOf(args));
 	}
 	public static TableValue table() {
 		return new TableValue(new HashMap<>());
@@ -123,7 +129,7 @@ public class ScriptAPI
 
 		SCRIPT_API = this;
 
-		registerPackage(("org.gaslang.script.lib.boot"));
+		registerPackage("org.gaslang.script.lib.boot");
 	}
 	
 	public void global(String name, Value<?> value) {
@@ -144,6 +150,18 @@ public class ScriptAPI
 	public void unregister(String module) {
 		modules.removeIf((child) -> child.getName().equals(module));
 		GasRuntime.GLOBAL_VALUES.remove(module);
+	}
+	public ScriptNativeType<?> getType(String name) {
+		return (ScriptNativeType<?>) types.stream()
+				.filter(t -> t.getName().equalsIgnoreCase(name))
+				.findFirst()
+				.orElseThrow();
+	}
+	public <T> ScriptNativeType<T> getType(Class<T> jClass) {
+		return (ScriptNativeType<T>) types.stream()
+				.filter(t -> ((ScriptNativeType<?>)t).getJavaClass().equals(jClass))
+				.findFirst()
+				.orElseThrow();
 	}
 	
 	public void registerPackage(GasPackage gasPackage) {

@@ -3,7 +3,7 @@ package org.gaslang.script.lib.boot;
 import org.gaslang.script.*;
 import org.gaslang.script.lib.annotation.GasFunction;
 import org.gaslang.script.lib.annotation.GasModule;
-import org.gaslang.script.lib.array.StrictArrayValue;
+import org.gaslang.script.lib.nativetypes.StrictArrayValue;
 
 import java.util.Optional;
 

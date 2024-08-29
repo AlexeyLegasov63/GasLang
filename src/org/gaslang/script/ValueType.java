@@ -11,6 +11,8 @@ public enum ValueType
 	CHAR,
 
 	FUNCTION,
+
+	THREAD,
 	
 	OBJECT,
 	MASK;

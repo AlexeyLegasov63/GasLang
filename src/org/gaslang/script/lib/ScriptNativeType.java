@@ -7,13 +7,13 @@ import org.gaslang.script.api.ScriptType;
 
 import java.util.ArrayList;
 
-public class ScriptNativeType extends ScriptType implements NativeObject
+public class ScriptNativeType<T> extends ScriptType implements NativeObject
 {
 	private InstanceCreator instanceCreator;
-	private Class<?> jClass;
+	private Class<T> jClass;
 	private boolean isShared;
 	
-	public ScriptNativeType(String name, Class<?> jClass, boolean isShared) {
+	public ScriptNativeType(String name, Class<T> jClass, boolean isShared) {
 		super(name, null, new ArrayList<>(), new Arguments());
 		this.jClass = jClass;
 		this.isShared = isShared;
@@ -23,7 +23,7 @@ public class ScriptNativeType extends ScriptType implements NativeObject
 		this.instanceCreator = instanceCreator;
 	}
 	
-	public Class<?> getJavaClass() {
+	public Class<T> getJavaClass() {
 		return jClass;
 	}
 	

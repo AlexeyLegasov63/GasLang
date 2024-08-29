@@ -6,7 +6,7 @@ import java.util.HashMap;
 
 public class ScriptStack
 {
-	private final HashMap<String, Value<?>> stack;
+	final HashMap<String, Value<?>> stack;
 	ScriptStack parent;
 	
 	public ScriptStack(ScriptStack parent) {

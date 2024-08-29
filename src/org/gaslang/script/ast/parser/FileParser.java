@@ -15,7 +15,6 @@ import org.gaslang.script.visitor.Visitor;
 
 import java.io.File;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
 
 import static org.gaslang.script.NullValue.NIL_VALUE;
@@ -102,7 +101,7 @@ public class FileParser
 		
 		Expression expression = assign();
 		
-		if (!(expression instanceof DefineFieldExpression || expression instanceof CallExpression)) throw report("Unknown statement: " + expression.getClass().getTypeName());
+		if (!(expression instanceof DefineFieldExpression || expression instanceof CallExpression)) throw report("Unknown statement: " + expression);
 		
 		return new EvalStatement(expression);
 	}
@@ -325,11 +324,11 @@ public class FileParser
 		
 		if (match(DOT)) {
 			Expression index = parseLiteral();	// WORD
-			return new IndexExpression(expression, index);
+			return index(new IndexExpression(expression, index));
 		}  else if (match(LBRAK)) {
 			Expression index = expression();
 			consume(RBRAK);
-			return new IndexExpression(expression, index);
+			return index(new IndexExpression(expression, index));
 		}
 		return expression;
 	}
@@ -374,7 +373,7 @@ public class FileParser
 		if (look(LBRAC)) {
 			return parseArray();
 		}
-		throw report("Uknown primary expression: " + token.getTokenType());
+		throw report("Unknown primary expression: " + token.getTokenType());
 	}
 	private Expression parseSpaceVariable() {
 		consume(LPAREN);
@@ -383,7 +382,7 @@ public class FileParser
 			case GLOBAL: yield StackSpace.GLOBAL;
 			case LOCAL: yield StackSpace.LOCAL;
 			default:
-				throw report("Uknown variable's space");
+				throw report("Unknown variable's space");
 		};
 		skip();
 		consume(RPAREN);
@@ -408,7 +407,6 @@ public class FileParser
 	}
 	private Expression parseCall(Expression expression) {
 		Expression args;
-		
 		if (match(RPAREN)) {
 			args = new TupleExpression();
 		} else {
@@ -574,7 +572,7 @@ public class FileParser
 		
 		String exportAlias = match(AS) ? consumeWord() : null;
 		
-		return new ExportStatement(expression, exportAlias);
+		return new ExportStatement(script, expression, exportAlias);
 	}
 	private Statement parseAlias() {
 		consume(ALIAS);
@@ -605,10 +603,23 @@ public class FileParser
 		} while(match(COMMA));
 		return expr;
 	}
-	
+	private FunctionExpression parseOneHeldLambda() {
+		var varName = consumeWord();
+		consume(EQRT);
+		var basicBlock = new BlockStatement();
+		do {
+			basicBlock.add(statement());
+		} while (match(AND));
+		var args = new Arguments(new ArrayList<>(List.of(new Argument(varName))), false);
+		return new FunctionExpression(basicBlock, args, new AnnotationsExpression(), false);
+	}
 	private TupleExpression parseTuple() {
 		TupleExpression expr = new TupleExpression();
 		do {
+			if (look(WORD) && look(EQRT, 1)) {
+				expr.add(parseOneHeldLambda());
+				continue;
+			}
 			if (look(WORD) && look(COLON, 1)) {
 				String tupleElementMark = consumeWord();
 				consume(COLON);
@@ -662,7 +673,6 @@ public class FileParser
 		return new PrimaryExpression(consume(WORD));
 	}
 
-	
 	private Statement spear(boolean stopAtEnd) {
 		return spear(stopAtEnd, null, null);
 	}

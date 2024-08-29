@@ -1,4 +1,4 @@
-package org.gaslang.script.lib.array;
+package org.gaslang.script.lib.nativetypes;
 
 import org.gaslang.script.Array;
 import org.gaslang.script.BooleanValue;

@@ -1,5 +1,6 @@
 package org.gaslang.script.lib;
 
+import org.gaslang.script.Iterable;
 import org.gaslang.script.ObjectValue;
 import org.gaslang.script.Tuple;
 import org.gaslang.script.Value;
@@ -8,7 +9,7 @@ import org.gaslang.script.exception.ValueMatchingTypeError;
 
 import java.util.HashMap;
 
-public class ScriptNativeObject extends ObjectValue implements NativeObject
+public class ScriptNativeObject extends ObjectValue implements NativeObject, Iterable
 {
 	private final Object jInstance;
 	
@@ -45,5 +46,11 @@ public class ScriptNativeObject extends ObjectValue implements NativeObject
 		if (constructor == null) return;
 		
 		constructor.call(args);
+	}
+
+	@Override
+	public HashMap<?, ?> getMap() {
+		if (jInstance instanceof Iterable itr) return itr.getMap();
+		throw new RuntimeException(jInstance.getClass().getSimpleName() + " isn't an iterable object");
 	}
 }

@@ -1,17 +1,20 @@
 package org.gaslang.script.lib.boot;
 
 import org.gaslang.script.FunctionValue;
+import org.gaslang.script.Iterable;
 import org.gaslang.script.Tuple;
 import org.gaslang.script.Value;
 import org.gaslang.script.lib.annotation.GasFunction;
 import org.gaslang.script.lib.annotation.GasType;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
+import static org.gaslang.script.api.ScriptAPI.array;
 import static org.gaslang.script.api.ScriptAPI.tuple;
 
 @GasType
-public class List
+public class List implements Iterable
 {
 	public ArrayList<Value<?>> values;
 	
@@ -65,5 +68,10 @@ public class List
 	@GasFunction
 	public void forEach(FunctionValue function) {
 		values.forEach(v -> function.call(tuple(v)));
+	}
+
+	@Override
+	public HashMap<?, ?> getMap() {
+		return array(values.toArray(new Value[0])).getMap();
 	}
 }

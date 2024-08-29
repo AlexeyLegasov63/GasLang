@@ -1,5 +1,6 @@
 package org.gaslang.script.run;
 
+import org.gaslang.script.Script;
 import org.gaslang.script.Value;
 
 import java.util.HashMap;
@@ -7,14 +8,22 @@ import java.util.HashMap;
 public class GasRuntime
 {
 	public static final HashMap<String, Value<?>> GLOBAL_VALUES = new HashMap<>();
-	
+
+	private final Script script;
 	private ScriptStack stack;
-	
+
+	public GasRuntime(Script script) {
+		this(new ScriptStack(null), script);
+	}
 	public GasRuntime() {
-		this(new ScriptStack(null));
+		this(new ScriptStack(null), null);
 	}
 	public GasRuntime(ScriptStack stack) {
+		this(stack, null);
+	}
+	public GasRuntime(ScriptStack stack,  Script script) {
 		this.stack = stack;
+		this.script = script;
 	}
 	
 	public boolean isPrimary() {
@@ -29,7 +38,15 @@ public class GasRuntime
 		if (stack.parent == null) return; //throw new RuntimeException();
 		stack = stack.parent;
 	}
-	
+
+	public Script getScript() {
+		return script;
+	}
+
+	public HashMap<String, Value<?>> listAll() {
+		return stack.stack;
+	}
+
 	public Value<?> get(String name) {
 		return stack.get(name);
 	}
