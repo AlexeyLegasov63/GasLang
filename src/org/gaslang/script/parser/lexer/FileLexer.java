@@ -82,9 +82,7 @@ public class FileLexer {
 	private void readWord() {
 		int startLine = row, startColumn = column;
 		char current = get(0);
-		while (true) {
-			if (!(isDigit(current) || isLetter(current) || current == '_'))
-				break;
+		while (isDigit(current) || isLetter(current) || current == '_') {
 			buffer.append(current);
 			current = next();
 		}
@@ -138,19 +136,6 @@ public class FileLexer {
 				}
 			}
 		}
-		/*while (true) {
-			if (!matchOperator(current))
-				break;
-			if (KEYWORDS.get(buffer.toString() + current) == null)
-				break;
-			buffer.append(current);
-			current = next();
-		}
-		if (buffer.isEmpty())
-			throw error("Uknown lexer operator");
-		addToken(new Operator(KEYWORDS.get(buffer.toString()), startLine, row, startColumn, column));
-		buffer.setLength(0);*/
-
 		while (true) {
 			final String text = buffer.toString();
 			if (!KEYWORDS.containsKey(text + current) && !text.isEmpty()) {
@@ -200,10 +185,8 @@ public class FileLexer {
 
 	private void readHex(int startLine, int startColumn) {
 		char current = get(0);
-		while (true) {
-			if (!(isDigit(current) || (current >= 'a' && current <= 'f')
-					|| (current >= 'A' && current <= 'F')))
-				break;
+		while (isDigit(current) || (current >= 'a' && current <= 'f')
+				|| (current >= 'A' && current <= 'F')) {
 			buffer.append(current);
 			current = next();
 		}
@@ -217,6 +200,7 @@ public class FileLexer {
 		if (current == '\0')
 			throw error("Unclosed Character");
 		if (current == '\\') {
+			current = next();
 			switch(current) {
 				case 'b': buffer.append('\b'); break;
 				case 't': buffer.append('\t'); break;
@@ -225,7 +209,7 @@ public class FileLexer {
 				case 'f': buffer.append('\f'); break;
 				case '\\': buffer.append('\\'); break;
 				default:
-					throw error("Uknown regular text expression");
+					throw error("Unknown regular text expression");
 			}
 		}
 		consume('\'');
@@ -249,7 +233,7 @@ public class FileLexer {
 					case 'f': buffer.append('\f'); break;
 					case '\\': buffer.append('\\'); break;
 					default:
-						throw error("Uknown regular text expression");
+						throw error("Unknown regular text expression");
 				}
 				current = next();
 				continue;

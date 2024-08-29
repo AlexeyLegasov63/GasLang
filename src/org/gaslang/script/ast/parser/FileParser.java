@@ -286,8 +286,7 @@ public class FileParser
 		} else if (match(NOT)) {
 			return new UnaryExpression(unary(), UnaryOperator.INV);
 		}
-		Expression expression = assign();
-		return expression;
+		return assign();
 	}
 
 	private Expression assign() {
@@ -321,10 +320,10 @@ public class FileParser
 	private Expression index(Expression expression) {
 		if (expression == null)
 			expression = primary();
-		
+
 		if (match(DOT)) {
 			Expression index = parseLiteral();	// WORD
-			return index(new IndexExpression(expression, index));
+			return index(match(QST) ? new ElvisExpression(new IndexExpression(expression, index)) : new IndexExpression(expression, index));
 		}  else if (match(LBRAK)) {
 			Expression index = expression();
 			consume(RBRAK);
@@ -357,6 +356,10 @@ public class FileParser
 			return parseSpaceVariable();
 		} else if (match(DLR)) {
 			return new ParamsExpression();
+		} else if (look(WORD) && look(QST, 1)) {
+			consume(WORD);
+			consume(QST);
+			return new ElvisExpression(new StackExpression(token.takeLiteral()));
 		} else if (match(WORD)) {
 			return new StackExpression(token.takeLiteral());
 		}

@@ -219,4 +219,9 @@ public abstract class AbstractVisitor implements Visitor
 	public void visit(MaskStatement maskStatement) {
 		maskStatement.annotations.accept(this);
 	}
+
+	@Override
+	public void visit(ElvisExpression elvisExpression) {
+		elvisExpression.expression.accept(this);
+	}
 }

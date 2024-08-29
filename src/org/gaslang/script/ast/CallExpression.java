@@ -20,23 +20,27 @@ public class CallExpression implements Expression
 
 	@Override
 	public Value<?> eval(GasRuntime gr) {
-		Value<?> value = this.value.eval(gr);
-		Tuple tuple = Tuple.valueOf(expression.eval(gr));
-		
-		if (value instanceof InstanceFunctionValue) {
-			tuple.getValues().add(0, ((IndexExpression)this.value).expression1.eval(gr));
-		}
-		
 		try {
-			CALLBACKS_SET.add(this.value);
-			return value.call(tuple);
-		} catch (Exception e) {
-			System.err.println(CALLBACKS_SET);
-			e.printStackTrace();
-		} finally {
-			 CALLBACKS_SET.remove(this.value);
+			var value = this.value.eval(gr);
+			var tuple = Tuple.valueOf(expression.eval(gr));
+
+			if (value instanceof InstanceFunctionValue) {
+				tuple.getValues().add(0, ((IndexExpression)this.value).expression1.eval(gr));
+			}
+
+			try {
+				CALLBACKS_SET.add(this.value);
+				return value.call(tuple);
+			} catch (Exception e) {
+				System.err.println(CALLBACKS_SET);
+				e.printStackTrace();
+			} finally {
+				CALLBACKS_SET.remove(this.value);
+			}
+			return NullValue.NIL_VALUE;
+		} catch (ElvisExpression.ElvisNonMatched e) {
+			return NullValue.NIL_VALUE;
 		}
-		return NullValue.NIL_VALUE;
 	}
 
 	@Override

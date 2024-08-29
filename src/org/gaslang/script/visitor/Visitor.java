@@ -82,4 +82,5 @@ public interface Visitor
 
 	void visit(CycleStatement cycleStatement);
 
+	void visit(ElvisExpression elvisExpression);
 }

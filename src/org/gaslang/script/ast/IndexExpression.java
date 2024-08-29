@@ -1,9 +1,6 @@
 package org.gaslang.script.ast;
 
-import org.gaslang.script.Accessible;
-import org.gaslang.script.Expression;
-import org.gaslang.script.Value;
-import org.gaslang.script.ValueType;
+import org.gaslang.script.*;
 import org.gaslang.script.run.GasRuntime;
 import org.gaslang.script.visitor.Visitor;
 
@@ -18,20 +15,29 @@ public class IndexExpression implements Expression, Accessible
 
 	@Override
 	public Value<?> eval(GasRuntime gr) {
-		Value<?> value1 = expression1.eval(gr), value2 = expression2.eval(gr);
-		return value1.index(value2);
+		return get(gr);
 	}
 
 	@Override
 	public Value<?> get(GasRuntime gr) {
-		Value<?> value1 = expression1.eval(gr), value2 = expression2.eval(gr);
-		return value1.index(value2);
+		try {
+			var value1 = expression1.eval(gr);
+			var value2 = expression2.eval(gr);
+			return value1.index(value2);
+		} catch (ElvisExpression.ElvisNonMatched m) {
+			return NullValue.NIL_VALUE;
+		}
 	}
 
 	@Override
 	public Value<?> set(GasRuntime gr, Value<?> v) {
-		Value<?> value1 = expression1.eval(gr), value2 = expression2.eval(gr);
-		return value1.set(value2, v);
+		try {
+			var value1 = expression1.eval(gr);
+			var value2 = expression2.eval(gr);
+			return value1.set(value2, v);
+		} catch (ElvisExpression.ElvisNonMatched m) {
+			return NullValue.NIL_VALUE;
+		}
 	}
 	@Override
 	public Value<?> insert(GasRuntime gr, Value<?> v) {

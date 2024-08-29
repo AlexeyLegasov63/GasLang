@@ -3,7 +3,7 @@ package org.gaslang.script;
 import org.gaslang.script.ast.ReturnStatement;
 import org.gaslang.script.run.GasRuntime;
 
-public class FunctionValue extends Value<Statement> implements Annotated
+public class FunctionValue extends Value<Statement> implements Annotated, PrimitiveValue
 {
 	public final GasRuntime localStack;
 	private final String functionName;

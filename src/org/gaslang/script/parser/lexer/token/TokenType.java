@@ -7,7 +7,7 @@ public enum TokenType
 	STRING(true),
 	CHARACTER(true),
 	BOOLEAN(true),
-	NULL(true),
+	NULL(true, "null"),
 	WORD,
 	
 	EQ("="),
