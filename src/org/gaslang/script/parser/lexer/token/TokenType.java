@@ -28,6 +28,7 @@ public enum TokenType
 	DOT("."),
 	COMMA(","),
 	COLON(":"),
+	SEMICOLON(";"),
 	DLR("$"),
 	AT("@"),
 	LTLT("<<", true),

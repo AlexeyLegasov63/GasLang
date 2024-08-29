@@ -293,7 +293,7 @@ public class FileParser
 	private Expression assign() {
 		Expression expression = function(null);
 
-		if (get(0).getTokenType().isArithmetical() && look(EQ, 1)) {
+		if (get(0).getTokenType() != null && get(0).getTokenType().isArithmetical() && look(EQ, 1)) {
 			var operator = BinaryOperator.getOperator(get(0).getTokenType());
 			skip();
 			consume(EQ);
@@ -442,9 +442,9 @@ public class FileParser
 		consume(FOR);
 		boolean closeParent = match(LPAREN);
 		Statement statement = statement();
-		consume(COMMA);
+		consume(SEMICOLON);
 		Expression expression = expression();
-		consume(COMMA);
+		consume(SEMICOLON);
 		Statement statement2 = statement();
 		if (closeParent) consume(RPAREN);
 		Statement block = parseBlockOrStatement(DO);
@@ -521,7 +521,7 @@ public class FileParser
 			}
 			names.add(index(null));
 		} while(match(COMMA, true));
-		return new TupleFieldStatement(names.toArray(new Expression[names.size()]), match(EQ) ? parseExpressionOrTuple() : new TupleExpression());
+		return new TupleFieldStatement(names.toArray(new Expression[0]), match(EQ) ? parseExpressionOrTuple() : new TupleExpression());
 	}
 	private Statement parseReturn() {
 		consume(RETURN);
