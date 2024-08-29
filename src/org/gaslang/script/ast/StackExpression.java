@@ -90,9 +90,12 @@ public class StackExpression implements Expression, Accessible
 	public void accept(Visitor visitor) {
 		visitor.visit(this);
 	}
-	
+
 	@Override
 	public String toString() {
-		return token.getLiteral();
+		return "StackExpression{" +
+				"space=" + space +
+				", token=" + token +
+				'}';
 	}
 }

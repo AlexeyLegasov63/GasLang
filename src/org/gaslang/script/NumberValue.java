@@ -68,6 +68,56 @@ public class NumberValue extends Value<Number> implements PrimitiveValue
 		return new NumberValue(x.doubleValue() % y.doubleValue());
 	}
 
+
+	/*
+	 * @Operator &
+	 */
+	public Value<?> and(Value<?> arg0) {
+		arg0.matchValueTypeOrThrow(getValueType());
+		Number x = jValue(), y = (Number) arg0.jValue();
+		return new NumberValue(x.intValue() & y.intValue());
+	}
+	/*
+	 * @Operator ^
+	 */
+	public Value<?> xor(Value<?> arg0) {
+		arg0.matchValueTypeOrThrow(getValueType());
+		Number x = jValue(), y = (Number) arg0.jValue();
+		return new NumberValue(x.intValue() ^ y.intValue());
+	}
+	/*
+	 * @Operator |
+	 */
+	public Value<?> or(Value<?> arg0) {
+		arg0.matchValueTypeOrThrow(getValueType());
+		Number x = jValue(), y = (Number) arg0.jValue();
+		return new NumberValue(x.intValue() | y.intValue());
+	}
+	/*
+	 * @Operator <<
+	 */
+	public Value<?> lshift(Value<?> arg0) {
+		arg0.matchValueTypeOrThrow(getValueType());
+		Number x = jValue(), y = (Number) arg0.jValue();
+		return new NumberValue(x.intValue() << y.intValue());
+}
+	/*
+	 * @Operator >>
+	 */
+	public Value<?> rshift(Value<?> arg0) {
+		arg0.matchValueTypeOrThrow(getValueType());
+		Number x = jValue(), y = (Number) arg0.jValue();
+		return new NumberValue(x.intValue() >> y.intValue());
+	}
+	/*
+	 * @Operator >>>
+	 */
+	public Value<?> urshift(Value<?> arg0) {
+		arg0.matchValueTypeOrThrow(getValueType());
+		Number x = jValue(), y = (Number) arg0.jValue();
+		return new NumberValue(x.intValue() >>> y.intValue());
+	}
+
 	/*
 	 * @Operator >
 	 */

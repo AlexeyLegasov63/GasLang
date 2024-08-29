@@ -18,24 +18,26 @@ public enum TokenType
 	RT(">"),
 	RTEQ(">="),
 	EQRT("=>"),
-	MINUS("-"),
+	MINUS("-", true),
 	MINUSMINUS("--"),
-	PLUS("+"),
+	PLUS("+", true),
 	PLUSPLUS("++"),
-	PLUSEQ("+="),
-	MINUSEQ("-="),
-	STAREQ("*="),
-	SLASHEQ("/="),
-	PERCEQ("%="),
-	PERC("%"),
-	SLASH("/"),
-	STAR("*"),
+	PERC("%", true),
+	SLASH("/", true),
+	STAR("*", true),
 	DOT("."),
 	COMMA(","),
 	COLON(":"),
-	LED("~"),
 	DLR("$"),
 	AT("@"),
+	LTLT("<<", true),
+	GTGT(">>", true),
+	GTGTGT(">>>", true),
+	TILDE("~"),
+	CARET("^", true),
+	BAR("|", true),
+	AMP("&", true),
+
 	LPAREN("("),
 	RPAREN(")"), 
 	LBRAK("["),
@@ -77,24 +79,33 @@ public enum TokenType
 	FUNCTION("function"),
 	MUT("let");
 	
-	private final Boolean isValue;
+	private final Boolean isValue, isArithmetical;
 	private final String literal;
 
 	private TokenType() {
-		this(false, "");
+		this(false, "", false);
 	}
 
 	private TokenType(String literal) {
-		this(false, literal);
+		this(false, literal, false);
+	}
+
+	private TokenType(String literal, Boolean isArithmetical) {
+		this(false, literal, isArithmetical);
 	}
 	
 	private TokenType(Boolean isValue) {
-		this(isValue, "");
+		this(isValue, "", false);
 	}
-	
+
 	private TokenType(Boolean isValue, String literal) {
+		this(isValue, literal, false);
+	}
+
+	private TokenType(Boolean isValue, String literal, Boolean isArithmetical) {
 		this.literal = literal;
 		this.isValue = isValue;
+		this.isArithmetical = isArithmetical;
 	}
 	
 	public String getLiteral() {
@@ -104,7 +115,11 @@ public enum TokenType
 	public boolean match(TokenType type) {
 		return this.equals(type);
 	}
-	
+
+	public boolean isArithmetical() {
+		return isArithmetical;
+	}
+
 	public boolean isValue() {
 		return isValue;
 	}

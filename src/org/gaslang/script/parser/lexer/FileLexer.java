@@ -138,7 +138,7 @@ public class FileLexer {
 				}
 			}
 		}
-		while (true) {
+		/*while (true) {
 			if (!matchOperator(current))
 				break;
 			if (KEYWORDS.get(buffer.toString() + current) == null)
@@ -149,7 +149,18 @@ public class FileLexer {
 		if (buffer.isEmpty())
 			throw error("Uknown lexer operator");
 		addToken(new Operator(KEYWORDS.get(buffer.toString()), startLine, row, startColumn, column));
-		buffer.setLength(0);
+		buffer.setLength(0);*/
+
+		while (true) {
+			final String text = buffer.toString();
+			if (!KEYWORDS.containsKey(text + current) && !text.isEmpty()) {
+				addToken(new Operator(KEYWORDS.get(buffer.toString()), startLine, row, startColumn, column));
+				buffer.setLength(0);
+				return;
+			}
+			buffer.append(current);
+			current = next();
+		}
 	}
 
 	private void readNumber() {

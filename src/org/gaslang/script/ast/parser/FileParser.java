@@ -15,6 +15,7 @@ import org.gaslang.script.visitor.Visitor;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 
 import static org.gaslang.script.NullValue.NIL_VALUE;
@@ -33,8 +34,8 @@ public class FileParser
 	};
 	
 	private List<Statement> statements;
-	private List<Token> tokens;
-	private File file;
+	private final List<Token> tokens;
+	private final File file;
 	private int position, max, row, col;
 	private Script script;
 	
@@ -101,7 +102,7 @@ public class FileParser
 		
 		Expression expression = assign();
 		
-		if (!(expression instanceof DefineFieldExpression || expression instanceof CallExpression)) throw report("Uknown statement: " + expression.getClass().getTypeName());
+		if (!(expression instanceof DefineFieldExpression || expression instanceof CallExpression)) throw report("Unknown statement: " + expression.getClass().getTypeName());
 		
 		return new EvalStatement(expression);
 	}
@@ -123,14 +124,56 @@ public class FileParser
 	}
 	
 	private Expression logicalAnd() {
-		Expression expression = equality();
+		Expression expression = bitwiseXor();
         while (true) {
             if (match(TokenType.AND)) {
-            	expression = new ConditionalExpression(expression, equality(), ConditionalyOperator.AND);
+            	expression = new ConditionalExpression(expression, bitwiseXor(), ConditionalyOperator.AND);
                 continue;
             }
             break;
         }
+		return expression;
+	}
+
+	private Expression bitwiseOr() {
+		Expression expression = bitwiseXor();
+
+		while (true) {
+			if (match(TokenType.BAR)) {
+				expression = new BinaryExpression(expression, bitwiseXor(), BinaryOperator.OR);
+				continue;
+			}
+			break;
+		}
+
+		return expression;
+	}
+
+	private Expression bitwiseXor() {
+		Expression expression = bitwiseAnd();
+
+		while (true) {
+			if (match(TokenType.CARET)) {
+				expression = new BinaryExpression(expression, bitwiseAnd(), BinaryOperator.XOR);
+				continue;
+			}
+			break;
+		}
+
+		return expression;
+	}
+
+	private Expression bitwiseAnd() {
+		Expression expression = equality();
+
+		while (true) {
+			if (match(TokenType.AMP)) {
+				expression = new BinaryExpression(expression, equality(), BinaryOperator.AND);
+				continue;
+			}
+			break;
+		}
+
 		return expression;
 	}
 
@@ -154,60 +197,49 @@ public class FileParser
     }
 
     private Expression conditional() {
-		Expression expression = assign();
+		Expression expression = shift();
         while (true) {
             if (match(TokenType.RT)) {
-            	expression = new ConditionalExpression(expression, assign(), ConditionalyOperator.MR);
+            	expression = new ConditionalExpression(expression, shift(), ConditionalyOperator.MR);
                 continue;
             }
             if (match(TokenType.LT)) {
-            	expression = new ConditionalExpression(expression, assign(), ConditionalyOperator.LS);
+            	expression = new ConditionalExpression(expression, shift(), ConditionalyOperator.LS);
                 continue;
             }
             if (match(TokenType.LTEQ)) {
-            	expression = new ConditionalExpression(expression, assign(), ConditionalyOperator.EQLS);
+            	expression = new ConditionalExpression(expression, shift(), ConditionalyOperator.EQLS);
                 continue;
             }
             if (match(TokenType.RTEQ)) {
-            	expression = new ConditionalExpression(expression, assign(), ConditionalyOperator.EQMR);
+            	expression = new ConditionalExpression(expression, shift(), ConditionalyOperator.EQMR);
                 continue;
             }
             break;
         }
 		return expression;
     }
-    
 
-
-	private Expression assign() {
-		Expression expression = shift();
-		
-		if (match(EQ)) {
-			return new DefineFieldExpression(expression, expression());
-		}
-		
-		return expression;
-	}
     
     private Expression shift() {
         Expression expression = additive();
-/*
+
         while (true) {
             if (match(TokenType.LTLT)) {
-            	expression = new BinaryExpression(expression, additive(), BINARY_OPETOR_LSH);
+            	expression = new BinaryExpression(expression, additive(), BinaryOperator.LSHIFT);
                 continue;
             }
-            if (match(TokenType.RTRT)) {
-            	expression = new BinaryExpression(expression, additive(), BINARY_OPETOR_RSH);
+            if (match(TokenType.GTGT)) {
+            	expression = new BinaryExpression(expression, additive(), BinaryOperator.RSHIFT);
                 continue;
             }
-            if (match(TokenType.RTRTRT)) {
-            	expression = new BinaryExpression(expression, additive(), BINARY_OPETOR_URSH);
+            if (match(TokenType.GTGTGT)) {
+            	expression = new BinaryExpression(expression, additive(), BinaryOperator.URSHIFT);
                 continue;
             }
             break;
         }
-*/
+
         return expression;
     }
 
@@ -250,14 +282,31 @@ public class FileParser
 	private Expression unary() {
 		if (match(MINUS)) {
 			return new UnaryExpression(unary(), UnaryOperator.NEG);
-		} else if (match(LED)) {
+		} else if (match(TILDE)) {
 			return new UnaryExpression(unary(), UnaryOperator.NEG);
 		} else if (match(NOT)) {
 			return new UnaryExpression(unary(), UnaryOperator.INV);
 		}
-		Expression expression = function(null);
+		Expression expression = assign();
 		return expression;
 	}
+
+	private Expression assign() {
+		Expression expression = function(null);
+
+		if (get(0).getTokenType().isArithmetical() && look(EQ, 1)) {
+			var operator = BinaryOperator.getOperator(get(0).getTokenType());
+			skip();
+			consume(EQ);
+			var second = expression();
+			return new DefineFieldExpression(expression, new BinaryExpression(expression, second, operator));
+		} else if (match(EQ)) {
+			return new DefineFieldExpression(expression, expression());
+		}
+
+		return expression;
+	}
+
 	// a().b().c.d().test
 	private Expression function(Expression expression) {
 		expression = index(expression);
@@ -313,9 +362,9 @@ public class FileParser
 			return new StackExpression(token.takeLiteral());
 		}
 		if (match(LPAREN)) {
-			//if (match(RPAREN)) {
-			//	return NIL_EXPRESSION; // () == null
-			//}
+			if (match(RPAREN)) {
+				return NIL_EXPRESSION; // () == null
+			}
 			try {
 				return expression();
 			} finally {
@@ -325,7 +374,7 @@ public class FileParser
 		if (look(LBRAC)) {
 			return parseArray();
 		}
-		throw report("Uknown primary expression");
+		throw report("Uknown primary expression: " + token.getTokenType());
 	}
 	private Expression parseSpaceVariable() {
 		consume(LPAREN);
@@ -670,7 +719,7 @@ public class FileParser
 	}
 	private <T extends Token> T get(int add) {
 		int i = position+add;
-		if (i >= max) throw report("Index out of bounds: " + i);
+		if (i >= max) return (T) tokens.get(0);
 		return (T) tokens.get(i);
 	}
 	private String consumeWord() {

@@ -21,21 +21,22 @@ public class BinaryExpression implements Expression
 	public Value<?> eval(GasRuntime gr) {
 		Value<?> val1 = expr1.eval(gr),
 				val2 = expr2.eval(gr);
-		
-		switch(operator) {
-			case ADD:
-				return val1.add(val2);
-			case SUB:
-				return val1.sub(val2);
-			case MUL:
-				return val1.mul(val2);
-			case DIV:
-				return val1.div(val2);
-			case MOD:
-				return val1.mod(val2);
-		}
-		
-		throw new RuntimeException();
+
+		return switch (operator) {
+			case ADD -> val1.add(val2);
+			case SUB -> val1.sub(val2);
+			case MUL -> val1.mul(val2);
+			case DIV -> val1.div(val2);
+			case MOD -> val1.mod(val2);
+			case AND -> val1.and(val2);
+			case XOR -> val1.xor(val2);
+			case OR -> val1.or(val2);
+			case LSHIFT -> val1.lshift(val2);
+			case RSHIFT -> val1.rshift(val2);
+			case URSHIFT -> val1.urshift(val2);
+			default -> throw new RuntimeException();
+		};
+
 	}
 
 	@Override

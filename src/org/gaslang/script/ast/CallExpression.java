@@ -43,4 +43,12 @@ public class CallExpression implements Expression
 	public void accept(Visitor visitor) {
 		visitor.visit(this);
 	}
+
+	@Override
+	public String toString() {
+		return "CallExpression{" +
+				"value=" + value +
+				", expression=" + expression +
+				'}';
+	}
 }

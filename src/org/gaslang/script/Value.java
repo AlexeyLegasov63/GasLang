@@ -113,6 +113,45 @@ public abstract class Value<T>
 	}
 
 	/*
+	 * @Operator &
+	 */
+	public Value<?> and(Value<?> arg0) {
+		throw new RuntimeException();
+	}
+	/*
+	 * @Operator ^
+	 */
+	public Value<?> xor(Value<?> arg0) {
+		throw new RuntimeException();
+	}
+	/*
+	 * @Operator |
+	 */
+	public Value<?> or(Value<?> arg0) {
+		throw new RuntimeException();
+	}
+	/*
+	 * @Operator <<
+	 */
+	public Value<?> lshift(Value<?> arg0) {
+		throw new RuntimeException();
+	}
+	/*
+	 * @Operator >>
+	 */
+	public Value<?> rshift(Value<?> arg0) {
+		throw new RuntimeException();
+	}
+	/*
+	 * @Operator >>>
+	 */
+	public Value<?> urshift(Value<?> arg0) {
+		throw new RuntimeException();
+	}
+
+
+
+	/*
 	 * @Operator wears of
 	 */
 	public BooleanValue wears(Value<?> arg0) {

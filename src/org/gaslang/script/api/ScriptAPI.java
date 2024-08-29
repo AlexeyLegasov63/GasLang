@@ -160,16 +160,22 @@ public class ScriptAPI
 
 	
 	public static enum BinaryOperator {
-		ADD(TokenType.PLUS, '+'),
-		SUB(TokenType.MINUS, '-'),
-		DIV(TokenType.SLASH, '/'),
-		MUL(TokenType.STAR, '*'),
-		MOD(TokenType.PERC, '%');
+		ADD(TokenType.PLUS, "+"),
+		SUB(TokenType.MINUS, "-"),
+		DIV(TokenType.SLASH, "/"),
+		MUL(TokenType.STAR, "*"),
+		MOD(TokenType.PERC, "%"),
+		AND(TokenType.AMP, "&"),
+		OR(TokenType.BAR, "|"),
+		XOR(TokenType.CARET, "^"),
+		LSHIFT(TokenType.LTLT, "<<"),
+		RSHIFT(TokenType.GTGT, ">>"),
+		URSHIFT(TokenType.GTGTGT, ">>>");;
 		
 		private TokenType type;
-		private char lit;
+		private String lit;
 		
-		private BinaryOperator(TokenType t, char l) {
+		private BinaryOperator(TokenType t, String l) {
 			type = t;
 			lit = l;
 		}
@@ -177,6 +183,21 @@ public class ScriptAPI
 		@Override
 		public String toString() {
 			return String.valueOf(lit);
+		}
+
+		public static BinaryOperator getOperator(String literal) {
+			for (BinaryOperator op : BinaryOperator.values()) {
+				if (!op.lit.equalsIgnoreCase(literal)) continue;
+				return op;
+			}
+			return null;
+		}
+		public static BinaryOperator getOperator(TokenType type) {
+			for (BinaryOperator op : BinaryOperator.values()) {
+				if (!op.type.equals(type)) continue;
+				return op;
+			}
+			return null;
 		}
 	}
 	public static enum ConditionalyOperator {
