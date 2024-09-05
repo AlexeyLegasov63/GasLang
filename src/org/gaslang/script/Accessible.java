@@ -1,5 +1,6 @@
 package org.gaslang.script;
 
+import org.gaslang.script.parser.lexer.token.Literal;
 import org.gaslang.script.run.GasRuntime;
 
 public interface Accessible
@@ -10,7 +11,7 @@ public interface Accessible
 	
 	Value<?> insert(GasRuntime gr, Value<?> v);
 	
-	String index(GasRuntime gr);
+	Literal index(GasRuntime gr);
 	
 	default boolean isEmpty(GasRuntime gr) {
 		return false;

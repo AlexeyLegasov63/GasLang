@@ -7,54 +7,43 @@ import org.gaslang.script.api.ScriptAPI.ConditionalyOperator;
 import org.gaslang.script.run.GasRuntime;
 import org.gaslang.script.visitor.Visitor;
 
-public class ConditionalExpression implements Expression
+public class ConditionalExpression extends OperatorExpression
 {
-	public Expression expr1, expr2;
+	public Expression expression1, expression2;
 	public ConditionalyOperator operator;
 	
-	public ConditionalExpression(Expression expr1, Expression expr2, ConditionalyOperator operator) {
-		this.expr1 = expr1;
-		this.expr2 = expr2;
+	public ConditionalExpression(Expression expression1, Expression expression2, ConditionalyOperator operator) {
+		super(expression1);
+		this.expression1 = expression1;
+		this.expression2 = expression2;
 		this.operator = operator;
 	}
 
 	@Override
-	public Value<?> eval(GasRuntime gr) {
-		Value<?> val1 = expr1.eval(gr), val2;
+	public Value<?> eval(GasRuntime gasRuntime) {
+		Value<?> value1 = expression1.eval(gasRuntime), value2;
 		
-		if (operator.equals(ConditionalyOperator.AND) && !val1.asBoolean()) {
-			return ScriptAPI.FALSE;
-		} else if (operator.equals(ConditionalyOperator.OR) && val1.asBoolean()) {
-			return val1;
+		if (operator.equals(ConditionalyOperator.AND) && !value1.asBoolean()) {
+			return ScriptAPI.NULL;
+		} else if (operator.equals(ConditionalyOperator.OR) && value1.asBoolean()) {
+			return value1;
 		}
 	// Don't eval the second value if the first one equals false
-		val2 = expr2.eval(gr);
-		
-		switch(operator) {
-			case OR:
-				return !val1.asBoolean() ? !val2.asBoolean() ? ScriptAPI.NULL : val2 : val1;
-			case AND:
-				return val1.asBoolean() && val2.asBoolean() ? val2 : ScriptAPI.NULL;
-			case WEARS:
-				return val1.wears(val2);
-			case INSTANCEOF:
-				return val1.instanceOf(val2);
-			case EQ:
-				return val1.equals(val2);
-			case EQLS:
-				return val1.equalsOrLess(val2);
-			case EQMR:
-				return val1.equalsOrMore(val2);
-			case LS:
-				return val1.lessThan(val2);
-			case MR:
-				return val1.moreThan(val2);
-			case NQ:
-				return val1.notEquals(val2);
-			default:
-				break;
-		}
-		throw new RuntimeException();
+		value2 = expression2.eval(gasRuntime);
+
+		return switch (operator) {
+			case OR -> !value1.asBoolean() ? !value2.asBoolean() ? ScriptAPI.NULL : value2 : value1;
+			case AND -> value1.asBoolean() && value2.asBoolean() ? value2 : ScriptAPI.NULL;
+			case WEARS -> value1.wears(value2);
+			case INSTANCEOF -> value1.instanceOf(value2);
+			case EQ -> value1.equals(value2);
+			case EQLS -> value1.equalsOrLess(value2);
+			case EQMR -> value1.equalsOrMore(value2);
+			case LS -> value1.lessThan(value2);
+			case MR -> value1.moreThan(value2);
+			case NQ -> value1.notEquals(value2);
+			default -> throw gasRuntime.error(getPosition(), "Unknown conditional operator");
+		};
 	}
 
 	@Override

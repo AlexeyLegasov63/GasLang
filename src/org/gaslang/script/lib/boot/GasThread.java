@@ -1,6 +1,5 @@
 package org.gaslang.script.lib.boot;
 
-import org.gaslang.script.FunctionBlock;
 import org.gaslang.script.FunctionValue;
 import org.gaslang.script.lib.annotation.GasFunction;
 import org.gaslang.script.lib.annotation.GasType;
@@ -8,7 +7,7 @@ import org.gaslang.script.lib.annotation.GasType;
 import static org.gaslang.script.api.ScriptAPI.tuple;
 
 @GasType(name = "thread", shared = false)
-public class GThread extends Thread
+public class GasThread extends Thread
 {
 	private FunctionValue value;
 

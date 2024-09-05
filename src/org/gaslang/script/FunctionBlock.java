@@ -1,8 +1,10 @@
 package org.gaslang.script;
 
-public interface FunctionBlock
+import org.gaslang.script.run.GasRuntime;
+
+public interface FunctionBlock extends Named
 {
-	Value<?> execute(Tuple args);
+	Value<?> execute(GasRuntime gasRuntime, Tuple args);
 
 	default String desiredArgs() {
 		return "";

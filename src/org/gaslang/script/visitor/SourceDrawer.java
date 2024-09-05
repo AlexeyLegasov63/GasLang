@@ -46,14 +46,14 @@ public class SourceDrawer extends AbstractVisitor
 
 	@Override
 	public void visit(PrimaryExpression primaryExpression) {
-		if (primaryExpression.token.match(TokenType.STRING)) {
-			write('"', primaryExpression.token.getLiteral(), '"');
+		if (primaryExpression.literalValue.match(TokenType.STRING)) {
+			write('"', primaryExpression.literalValue.getLiteral(), '"');
 			return;
-		} else if (primaryExpression.token.match(TokenType.CHARACTER)) {
-			write('\'', primaryExpression.token.getLiteral(), '\'');
+		} else if (primaryExpression.literalValue.match(TokenType.CHARACTER)) {
+			write('\'', primaryExpression.literalValue.getLiteral(), '\'');
 			return;
 		}
-		write(primaryExpression.token.getLiteral());
+		write(primaryExpression.literalValue.getLiteral());
 	}
 
 	@Override
@@ -84,9 +84,9 @@ public class SourceDrawer extends AbstractVisitor
 
 	@Override
 	public void visit(CallExpression callExpression) {
-		callExpression.value.accept(this);
+		callExpression.valueExpressionToCall.accept(this);
 		write('(');
-		callExpression.expression.accept(this);
+		callExpression.callArgumentsExpression.accept(this);
 		write(')');
 	}
 
@@ -108,7 +108,7 @@ public class SourceDrawer extends AbstractVisitor
 	}
 
 	@Override
-	public void visit(ParamsExpression paramsExpression) {
+	public void visit(VarArgsExpression varArgsExpression) {
 		write("$ ");
 	}
 
@@ -137,13 +137,13 @@ public class SourceDrawer extends AbstractVisitor
 
 	@Override
 	public void visit(FunctionExpression functionExpression) {
-		functionExpression.annotations.accept(this);
+		functionExpression.annotationsExpression.accept(this);
 		write("function");
 		if (functionExpression.isInstanceFunction) write(':');
 		write('(');
-		functionExpression.arguments.forEach(arg -> write(arg.name()));
+		functionExpression.functionArguments.forEach(arg -> write(arg.name()));
 		write(") ");
-		functionExpression.statement.accept(this);
+		functionExpression.functionBlockStatement.accept(this);
 	}
 
 	@Override
@@ -167,22 +167,22 @@ public class SourceDrawer extends AbstractVisitor
 
 	@Override
 	public void visit(BinaryExpression binaryExpression) {
-		binaryExpression.expr1.accept(this);
+		binaryExpression.expression1.accept(this);
 		write(' ', binaryExpression.operator.toString(), ' ');
-		binaryExpression.expr2.accept(this);
+		binaryExpression.expression2.accept(this);
 	}
 
 	@Override
 	public void visit(UnaryExpression unaryExpression) {
 		write(unaryExpression.operator.toString(), ' ');
-		unaryExpression.expr.accept(this);
+		unaryExpression.expression.accept(this);
 	}
 
 	@Override
 	public void visit(ConditionalExpression conditionalExpression) {
-		conditionalExpression.expr1.accept(this);
+		conditionalExpression.expression1.accept(this);
 		write(' ', conditionalExpression.operator.toString(), ' ');
-		conditionalExpression.expr2.accept(this);
+		conditionalExpression.expression2.accept(this);
 	}
 
 	@Override
@@ -194,16 +194,16 @@ public class SourceDrawer extends AbstractVisitor
 
 	@Override
 	public void visit(DefineFieldExpression defineFieldExpression) {
-		defineFieldExpression.expression1.accept(this);
+		defineFieldExpression.expressionToDefine.accept(this);
 		write(" = ");
-		defineFieldExpression.expression2.accept(this);
+		defineFieldExpression.newValueExpression.accept(this);
 	}
 
 	@Override
 	public void visit(IndexExpression indexExpression) {
-		indexExpression.expression1.accept(this);
+		indexExpression.parentExpression.accept(this);
 		write('.');
-		indexExpression.expression2.accept(this);
+		indexExpression.indexExpression.accept(this);
 	}
 
 	@Override
@@ -252,7 +252,7 @@ public class SourceDrawer extends AbstractVisitor
 
 	@Override
 	public void visit(StructExpression structExpression) {
-		write(structExpression.name, " {");
+		write(structExpression.structName, " {");
 		structExpression.values.forEach((k,v) -> {
 			k.accept(this);
 			write("; ");
@@ -298,7 +298,7 @@ public class SourceDrawer extends AbstractVisitor
 			write(arg.name(), "; ");
 		});
 		write(") wears ");
-		objectExpression.masks.accept(this);
+		objectExpression.masksTupleExpression.accept(this);
 	}
 
 	@Override

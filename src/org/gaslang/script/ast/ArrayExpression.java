@@ -10,11 +10,12 @@ import org.gaslang.script.visitor.Visitor;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-public class ArrayExpression implements Expression
+public class ArrayExpression extends OperatorExpression
 {
 	public final Expression value;
 	
 	public ArrayExpression(Expression value) {
+		super(value);
 		this.value = value;
 	}
 	
@@ -27,7 +28,7 @@ public class ArrayExpression implements Expression
 			for (int i = 0, l = values.size(); i < l; i++) {
 				array.put(i, values.get(i).eval(gr));
 			}
-		} else if (value instanceof ParamsExpression) {
+		} else if (value instanceof VarArgsExpression) {
 			ArrayList<Value<?>> values = ((Tuple)value.eval(gr)).getValues();
 			
 			for (int i = 0, l = values.size(); i < l; i++) {

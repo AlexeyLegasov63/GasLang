@@ -2,6 +2,7 @@ package org.gaslang.script.ast;
 
 import org.gaslang.script.TableValue;
 import org.gaslang.script.Value;
+import org.gaslang.script.parser.lexer.token.Literal;
 import org.gaslang.script.run.GasRuntime;
 import org.gaslang.script.visitor.Visitor;
 
@@ -9,17 +10,17 @@ import static org.gaslang.script.api.ScriptAPI.struct;
 
 public class StructExpression extends TableExpression
 {
-	public String name;
+	public String structName;
 	
-	public StructExpression(Nodes arguments, String name) {
-		super(arguments);
-		this.name = name;
+	public StructExpression(Literal literalStructName, Nodes arguments) {
+		super(Position.of(literalStructName), arguments);
+		this.structName = literalStructName.getLiteral();
 	}
 
 	@Override
-	public Value<?> eval(GasRuntime gr) {
-		Value<?> tableValue = super.eval(gr);
-		struct((TableValue)tableValue, name);
+	public Value<?> eval(GasRuntime gasRuntime) {
+		var tableValue = super.eval(gasRuntime);
+		struct((TableValue)tableValue, structName);
 		return tableValue;
 	}
 

@@ -4,43 +4,41 @@ import org.gaslang.script.*;
 import org.gaslang.script.run.GasRuntime;
 import org.gaslang.script.visitor.Visitor;
 
-import java.util.HashSet;
-
-public class CallExpression implements Expression
+public class CallExpression extends OperandExpression
 {
-	private static final HashSet<Expression> CALLBACKS_SET = new HashSet<>();
-	
-	public Expression value;
-	public Expression expression;
+	public final Expression valueExpressionToCall, callArgumentsExpression;
 
-	public CallExpression(Expression value, Expression expression) {
-		this.value = value;
-		this.expression = expression;
+	public CallExpression(Position position, Expression valueExpressionToCall, Expression callArgumentsExpression) {
+		super(position);
+		this.valueExpressionToCall = valueExpressionToCall;
+		this.callArgumentsExpression = callArgumentsExpression;
 	}
 
 	@Override
-	public Value<?> eval(GasRuntime gr) {
+	public Value<?> eval(GasRuntime gasRuntime) {
 		try {
-			var value = this.value.eval(gr);
-			var tuple = Tuple.valueOf(expression.eval(gr));
+			var value = valueExpressionToCall.eval(gasRuntime);
+			if (value.isNull()) {
+				throw gasRuntime.error(getPosition(), "Non-valid value for call expression: null");
+			}
+
+			gasRuntime.enter(getPosition(), valueExpressionToCall.toString() + "()");
+
+			var tuple = Tuple.valueOf(callArgumentsExpression.eval(gasRuntime));
 
 			if (value instanceof InstanceFunctionValue) {
-				tuple.getValues().add(0, ((IndexExpression)this.value).expression1.eval(gr));
+				tuple.addFirst(((IndexExpression)valueExpressionToCall).indexExpression.eval(gasRuntime));
 			}
 
-			try {
-				CALLBACKS_SET.add(this.value);
-				return value.call(tuple);
-			} catch (Exception e) {
-				System.err.println(CALLBACKS_SET);
-				e.printStackTrace();
-			} finally {
-				CALLBACKS_SET.remove(this.value);
-			}
-			return NullValue.NIL_VALUE;
-		} catch (ElvisExpression.ElvisNonMatched e) {
-			return NullValue.NIL_VALUE;
+			var returnValue = value.call(gasRuntime, tuple);
+
+			gasRuntime.exit();
+
+			return returnValue;
+		} catch (ElvisExpression.ElvisNonMatched ignored) {
+
 		}
+		return NullValue.NIL_VALUE;
 	}
 
 	@Override
@@ -50,6 +48,6 @@ public class CallExpression implements Expression
 
 	@Override
 	public String toString() {
-		return value + "(" + expression + ")";
+		return valueExpressionToCall + "(" + callArgumentsExpression + ")";
 	}
 }

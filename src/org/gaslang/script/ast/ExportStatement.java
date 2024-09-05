@@ -7,10 +7,12 @@ import org.gaslang.script.visitor.Visitor;
 public class ExportStatement implements Statement
 {
 	public Script script;
+	public Position position;
 	public Expression expression;
 	public String exportAlias;
 
-	public ExportStatement(Script script, Expression expression, String exportAlias) {
+	public ExportStatement(Position position, Script script, Expression expression, String exportAlias) {
+		this.position = position;
 		this.expression = expression;
 		this.exportAlias = exportAlias;
 		this.script = script;
@@ -31,11 +33,10 @@ public class ExportStatement implements Statement
 			gr.getScript().export(exportAlias, expression.eval(gr));
 			return;
 		}
-		if (!(expression instanceof Accessible)) throw new RuntimeException();
-		Accessible accessible = (Accessible)expression;
-		String index = accessible.index(gr);
-		if (index == null) throw new RuntimeException();
-		gr.getScript().export(exportAlias == null ? index : exportAlias, expression.eval(gr));
+		if (!(expression instanceof Accessible accessible)) throw new RuntimeException();
+		var indexLiteral = accessible.index(gr);
+		if (indexLiteral == null) throw gr.error(expression.getPosition(), "Unknown literal index");
+		gr.getScript().export(exportAlias == null ? indexLiteral.getLiteral() : exportAlias, expression.eval(gr));
 	}
 	
 	@Override

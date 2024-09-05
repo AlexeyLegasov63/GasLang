@@ -9,10 +9,14 @@ import org.gaslang.script.visitor.Visitor;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-public class TupleExpression implements Expression
+public class TupleExpression extends OperandExpression
 {
-	private final HashMap<String, Expression> named = new HashMap<>();
+	public final HashMap<String, Expression> named = new HashMap<>();
 	public final ArrayList<Expression> expressions = new ArrayList<>();
+
+	public TupleExpression(Position position) {
+		super(position);
+	}
 
 	public void add(Expression expression) {
 		expressions.add(expression);
@@ -23,17 +27,17 @@ public class TupleExpression implements Expression
 	}
 	
 	@Override
-	public Value<?> eval(GasRuntime gr) {
+	public Value<?> eval(GasRuntime gasRuntime) {
 		var length = expressions.size();
 		var values = new Value<?>[length];
 		
 		for (int i = 0; i < length; i++) {
-			values[i] = expressions.get(i).eval(gr);
+			values[i] = expressions.get(i).eval(gasRuntime);
 		}
 		
 		HashMap<String, Value<?>> named = new HashMap<>();
 		
-		this.named.forEach((k,v) -> named.put(k, v.eval(gr)));
+		this.named.forEach((k,v) -> named.put(k, v.eval(gasRuntime)));
 		
 		return Tuple.valueOf(named, values);
 	}

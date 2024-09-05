@@ -8,11 +8,11 @@ import org.gaslang.script.lib.annotation.GasFunction;
 import org.gaslang.script.lib.annotation.GasModule;
 
 @GasModule(name = "threads", shared = true)
-public class Threads
+public class ThreadModule
 {
 	@GasFunction
 	public Value<?> newThread(FunctionValue function, Tuple tuple) {
-		return ScriptAPI.instance(GThread.class, function, tuple);
+		return ScriptAPI.instance(GasThread.class, function, tuple);
 	}
 	@GasFunction
 	public Boolean sleep(Long sleepTime) {

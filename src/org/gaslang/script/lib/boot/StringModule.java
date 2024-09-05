@@ -33,9 +33,13 @@ public class StringModule
 	
 	@GasFunction
 	public Number toNumber(String value) {
-		return value.contains(".") 
-				? Double.parseDouble(value) 
-				: Integer.parseInt(value);
+		try {
+			return value.contains(".")
+					? Double.parseDouble(value)
+					: Integer.parseInt(value);
+		} catch (NumberFormatException ignored) {
+			return null;
+		}
 	}
 
 	@GasFunction

@@ -1,14 +1,16 @@
 package org.gaslang.script.ast;
 
 import org.gaslang.script.*;
+import org.gaslang.script.parser.lexer.token.Literal;
 import org.gaslang.script.run.GasRuntime;
 import org.gaslang.script.visitor.Visitor;
 
-public class ElvisExpression implements Expression, Accessible
+public class ElvisExpression extends OperatorExpression implements Accessible
 {
 	public Expression expression;
 
 	public ElvisExpression(Expression expression) {
+		super(expression);
 		this.expression = expression;
 	}
 
@@ -34,7 +36,8 @@ public class ElvisExpression implements Expression, Accessible
 
 			return ac.get(gr);
 		}
-		throw new RuntimeException();
+
+		throw gr.error(getPosition(), "Non-accessible expression");
 	}
 
 	@Override
@@ -48,7 +51,7 @@ public class ElvisExpression implements Expression, Accessible
 
 			return ac.set(gr, v);
 		}
-		throw new RuntimeException();
+		throw gr.error(getPosition(), "Non-accessible expression");
 	}
 	@Override
 	public Value<?> insert(GasRuntime gr, Value<?> v) {
@@ -62,7 +65,7 @@ public class ElvisExpression implements Expression, Accessible
 
 			return ac.insert(gr, v);
 		}
-		throw new RuntimeException();
+		throw gr.error(getPosition(), "Non-accessible expression");
 	}
 
 	@Override
@@ -76,21 +79,21 @@ public class ElvisExpression implements Expression, Accessible
 
 			return ac.isEmpty(gr);
 		}
-		throw new RuntimeException();
+		throw gr.error(getPosition(), "Non-accessible expression");
 	}
 
 	@Override
-	public String index(GasRuntime gr) {
-		if (expression instanceof Accessible ac) {
+	public Literal index(GasRuntime gr) {
+		if (expression instanceof Accessible accessible) {
 			var value = expression.eval(gr);
 
 			if (value.isNull()) {
 				throw new ElvisNonMatched();
 			}
 
-			return ac.index(gr);
+			return accessible.index(gr);
 		}
-		throw new RuntimeException();
+		throw gr.error(getPosition(), "Non-accessible expression");
 	}
 
 	@Override

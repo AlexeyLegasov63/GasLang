@@ -6,24 +6,25 @@ import org.gaslang.script.Value;
 import org.gaslang.script.run.GasRuntime;
 import org.gaslang.script.visitor.Visitor;
 
-public class DefineFieldExpression implements Expression
+public class DefineFieldExpression extends OperatorExpression
 {
-	public Expression expression1, expression2;
+	public final Expression expressionToDefine, newValueExpression;
 	
-	public DefineFieldExpression(Expression expression1, Expression expression2) {
-		this.expression1 = expression1;
-		this.expression2 = expression2;
+	public DefineFieldExpression(Expression expressionToDefine, Expression newValueExpression) {
+		super(expressionToDefine);
+		this.expressionToDefine = expressionToDefine;
+		this.newValueExpression = newValueExpression;
 	}
 
 	@Override
-	public Value<?> eval(GasRuntime gr) {
-		Accessible accessible = (Accessible)expression1;
+	public Value<?> eval(GasRuntime gasRuntime) {
+		var accessible = (Accessible)expressionToDefine;
 		
-		if (accessible.isEmpty(gr)) {
-			throw new RuntimeException(accessible.getClass().toGenericString());
+		if (accessible.isEmpty(gasRuntime)) {
+			throw gasRuntime.error(getPosition(), "Empty accessible");
 		}
 		
-		return accessible.set(gr, expression2.eval(gr));
+		return accessible.set(gasRuntime, newValueExpression.eval(gasRuntime));
 	}
 
 	@Override

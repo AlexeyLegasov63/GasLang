@@ -3,6 +3,7 @@ package org.gaslang.script;
 import org.gaslang.script.api.ScriptAPI;
 import org.gaslang.script.api.ScriptModule;
 import org.gaslang.script.exception.ValueMatchingTypeError;
+import org.gaslang.script.run.GasRuntime;
 
 import java.util.Objects;
 
@@ -225,13 +226,20 @@ public abstract class Value<T>
 	/*
 	 * @Operator this(arg0)
 	 */
+	public Value<?> call(GasRuntime gasRuntime, Tuple arg0) {
+		return call(arg0);
+	}
+
+	/*
+	 * @Operator this(arg0)
+	 */
 	public Value<?> call(Tuple arg0) {
 		throw new RuntimeException();
 	}
 
 	@Override
 	public boolean equals(Object o) {
-		return o != null && o instanceof Value && ((Value)o).value.equals(value);
+		return o instanceof Value && ((Value) o).value.equals(value);
 	}
 	@Override
 	public int hashCode() {

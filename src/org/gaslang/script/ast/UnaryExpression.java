@@ -6,30 +6,28 @@ import org.gaslang.script.api.ScriptAPI.UnaryOperator;
 import org.gaslang.script.run.GasRuntime;
 import org.gaslang.script.visitor.Visitor;
 
-public class UnaryExpression implements Expression
+public class UnaryExpression extends OperatorExpression
 {
-	public Expression expr;
+	public Expression expression;
 	public UnaryOperator operator;
 	
-	public UnaryExpression(Expression expr, UnaryOperator operator) {
-		this.expr = expr;
+	public UnaryExpression(Expression expression, UnaryOperator operator) {
+		super(expression);
+		this.expression = expression;
 		this.operator = operator;
 	}
 
 	@Override
-	public Value eval(GasRuntime gr) {
-		Value value = expr.eval(gr);
-		System.out.println(value);
-		switch(operator) {
-			case NEG:
-				return value.negate();
-			case INV:
-				return value.inverse();
-		default:
-			break;
+	public Value<?> eval(GasRuntime gasRuntime) {
+		Value<?> value = expression.eval(gasRuntime);
+		if (value.isNull()) {
+			throw gasRuntime.error(getPosition(), "Non-valid value for unary expression: null");
 		}
-		
-		throw new RuntimeException();
+		return switch (operator) {
+			case NEG -> value.negate();
+			case INV -> value.inverse();
+			default -> throw gasRuntime.error(getPosition(), "Unknown unary operator");
+		};
 	}
 
 	@Override

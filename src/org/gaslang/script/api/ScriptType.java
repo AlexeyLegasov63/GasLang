@@ -1,6 +1,7 @@
 package org.gaslang.script.api;
 
 import org.gaslang.script.*;
+import org.gaslang.script.run.GasRuntime;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -30,7 +31,7 @@ public class ScriptType extends Value<HashMap<String, Value<?>>> implements Anno
 	}
 
 	@Override
-	public Value<?> call(Tuple args) {
+	public Value<?> call(GasRuntime gasRuntime, Tuple args) {
 		
 		HashMap<String, Value<?>> stack = new HashMap<>(), thisStack = jValue();
 

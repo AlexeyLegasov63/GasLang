@@ -4,6 +4,7 @@ import org.gaslang.script.Arguments;
 import org.gaslang.script.Tuple;
 import org.gaslang.script.Value;
 import org.gaslang.script.api.ScriptType;
+import org.gaslang.script.run.GasRuntime;
 
 import java.util.ArrayList;
 
@@ -37,10 +38,10 @@ public class ScriptNativeType<T> extends ScriptType implements NativeObject
 	}
 
 	@Override
-	public Value<?> call(Tuple args) {
+	public Value<?> call(GasRuntime gasRuntime, Tuple args) {
 		ScriptNativeObject scriptNativeObject = instanceCreator.create();
 		
-		scriptNativeObject.callContructor(args);
+		scriptNativeObject.callConstructor(gasRuntime, args);
 		
 		return scriptNativeObject;
 	}

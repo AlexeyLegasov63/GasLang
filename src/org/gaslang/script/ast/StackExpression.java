@@ -7,7 +7,7 @@ import org.gaslang.script.parser.lexer.token.Literal;
 import org.gaslang.script.run.GasRuntime;
 import org.gaslang.script.visitor.Visitor;
 
-public class StackExpression implements Expression, Accessible
+public class StackExpression extends OperandExpression implements Accessible
 {
 	public StackSpace space;
 	public Literal token;
@@ -16,42 +16,37 @@ public class StackExpression implements Expression, Accessible
 		this(token, StackSpace.CURRENT);
 	}
 	public StackExpression(Literal token, StackSpace space) {
+		super(Position.of(token));
 		this.token = token;
 		this.space = space;
 	}
 
 	@Override
-	public Value<?> eval(GasRuntime gr) {
+	public Value<?> eval(GasRuntime gasRuntime) {
+		return get(gasRuntime);
+	}
+
+	@Override
+	public Value<?> get(GasRuntime gasRuntime) {
 		String literalName = token.getLiteral();
-		
+
 		Value<?> value = switch (space) {
-			case CURRENT: yield gr.get(literalName);
-			case LOCAL: yield gr.getLocal(literalName);
-			case GLOBAL: yield gr.getGlobal(literalName);
+			case CURRENT: yield gasRuntime.get(literalName);
+			case LOCAL: yield gasRuntime.getLocal(literalName);
+			case GLOBAL: yield gasRuntime.getGlobal(literalName);
 		};
-		
+
 		if (value != null) {
 			if (value instanceof AliasValue aliasValue) {
-				value = gr.get(aliasValue.jValue());
-				if (value == null) throw new RuntimeException(String.format("There's no such alias: %s", literalName));
+				value = gasRuntime.get(aliasValue.jValue());
+				if (value == null)
+					throw gasRuntime.error(getPosition(), String.format("There's no such variable: %s", literalName));
 				return value;
 			}
 			return value;
 		}
-		
-		if (gr.isPrimary()) 
-			throw new RuntimeException(String.format("There's no such variable: %s", literalName));
-		
-		return ScriptAPI.NULL;
-	}
 
-	@Override
-	public Value<?> get(GasRuntime gr) {
-		Value<?> value = gr.get(token.getLiteral());
-		if (value != null) {
-			return value;
-		}
-		throw new RuntimeException();
+		throw gasRuntime.error(getPosition(), String.format("There's no such variable: %s", literalName));
 	}
 
 	@Override
@@ -82,8 +77,8 @@ public class StackExpression implements Expression, Accessible
 	}
 
 	@Override
-	public String index(GasRuntime gr) {
-		return token.getLiteral();
+	public Literal index(GasRuntime gr) {
+		return token;
 	}
 
 	@Override

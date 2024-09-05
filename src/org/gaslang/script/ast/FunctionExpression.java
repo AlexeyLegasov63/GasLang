@@ -4,24 +4,26 @@ import org.gaslang.script.*;
 import org.gaslang.script.run.GasRuntime;
 import org.gaslang.script.visitor.Visitor;
 
-public class FunctionExpression implements Expression
+public class FunctionExpression extends OperandExpression
 {
 	public boolean isInstanceFunction;
-	public Statement statement;
-	public Arguments arguments;
-	public AnnotationsExpression annotations;
+	public Statement functionBlockStatement;
+	public Arguments functionArguments;
+	public AnnotationsExpression annotationsExpression;
 	
-	public FunctionExpression(Statement statement, Arguments arguments, AnnotationsExpression annotations, boolean isInstanceFunction) {
-		this.statement = statement;
-		this.arguments = arguments;
-		this.annotations = annotations;
+	public FunctionExpression(Position defictionPosition, Statement functionBlockStatement, Arguments functionArguments, AnnotationsExpression annotationsExpression, boolean isInstanceFunction) {
+		super(defictionPosition);
+		this.functionBlockStatement = functionBlockStatement;
+		this.functionArguments = functionArguments;
+		this.annotationsExpression = annotationsExpression;
 		this.isInstanceFunction = isInstanceFunction;
 	}
 
 	@Override
-	public Value<?> eval(GasRuntime gr) {
-		return isInstanceFunction ? new InstanceFunctionValue(gr, "Anonymous", annotations.getAnnotations(gr), arguments, statement)
-				: new FunctionValue(gr, "Anonymous", annotations.getAnnotations(gr), arguments, statement);
+	public Value<?> eval(GasRuntime gasRuntime) {
+		var annotations = annotationsExpression.getAnnotations(gasRuntime);
+		return isInstanceFunction ? new InstanceFunctionValue(gasRuntime, "Anonymous", annotations, functionArguments, functionBlockStatement)
+				: new FunctionValue(gasRuntime, "Anonymous", annotations, functionArguments, functionBlockStatement);
 	}
 
 	@Override

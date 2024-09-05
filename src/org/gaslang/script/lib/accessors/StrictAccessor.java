@@ -2,6 +2,7 @@ package org.gaslang.script.lib.accessors;
 
 import org.gaslang.script.Tuple;
 import org.gaslang.script.Value;
+import org.gaslang.script.run.GasRuntime;
 
 import java.lang.reflect.Method;
 import java.lang.reflect.Type;
@@ -16,10 +17,10 @@ public class StrictAccessor extends MethodAccessor
 	}
 
 	@Override
-	public Value<?> execute(Tuple tuple) {
+	public Value<?> execute(GasRuntime gasRuntime, Tuple tuple) {
 		try {
 			int arrayLength = argumentsTypes.length;
-			
+
 			if (arrayLength == 1 && argumentsTypes[0].equals(Tuple.class)) {
 				return value(nativeMethod.invoke(objectInstance, tuple));
 			}
@@ -33,6 +34,13 @@ public class StrictAccessor extends MethodAccessor
 			
 			for (int i = 0; i < arrayLength; i++) {
 				Class<?> paramClass = argumentsTypes[i];
+				if (paramClass.isAssignableFrom(GasRuntime.class)) {
+					arguments[i] = gasRuntime;
+					continue;
+				} else if (paramClass.isAssignableFrom(Tuple.class)) { // VarArgs
+					arguments[i] = tuple.subTuple(i);
+					break;
+				}
 				Type paramType = nativeMethod.getGenericParameterTypes()[i];
 				arguments[i] = paramClass.cast(tryCastValue(rawArguments[i], paramClass, paramType));
 			}
@@ -45,5 +53,4 @@ public class StrictAccessor extends MethodAccessor
 		
 		return NULL;
 	}
-	
 }

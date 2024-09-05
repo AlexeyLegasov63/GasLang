@@ -14,6 +14,11 @@ public class FakeExpression implements Expression
 	}
 
 	@Override
+	public Position getPosition() {
+		return Position.ZERO;
+	}
+
+	@Override
 	public void accept(Visitor visitor) {
 		visitor.visit(this);
 	}

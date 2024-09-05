@@ -41,8 +41,8 @@ public abstract class AbstractVisitor implements Visitor
 
 	@Override
 	public void visit(CallExpression callExpression) {
-		callExpression.value.accept(this);
-		callExpression.expression.accept(this);
+		callExpression.valueExpressionToCall.accept(this);
+		callExpression.callArgumentsExpression.accept(this);
 	}
 
 	@Override
@@ -60,7 +60,7 @@ public abstract class AbstractVisitor implements Visitor
 	}
 
 	@Override
-	public void visit(ParamsExpression paramsExpression) {
+	public void visit(VarArgsExpression varArgsExpression) {
 	}
 
 	@Override
@@ -83,8 +83,8 @@ public abstract class AbstractVisitor implements Visitor
 
 	@Override
 	public void visit(FunctionExpression functionExpression) {
-		functionExpression.annotations.accept(this);
-		functionExpression.statement.accept(this);
+		functionExpression.annotationsExpression.accept(this);
+		functionExpression.functionBlockStatement.accept(this);
 	}
 
 	@Override
@@ -105,19 +105,19 @@ public abstract class AbstractVisitor implements Visitor
 
 	@Override
 	public void visit(BinaryExpression binaryExpression) {
-		binaryExpression.expr1.accept(this);
-		binaryExpression.expr2.accept(this);
+		binaryExpression.expression1.accept(this);
+		binaryExpression.expression2.accept(this);
 	}
 
 	@Override
 	public void visit(UnaryExpression unaryExpression) {
-		unaryExpression.expr.accept(this);
+		unaryExpression.expression.accept(this);
 	}
 
 	@Override
 	public void visit(ConditionalExpression conditionalExpression) {
-		conditionalExpression.expr1.accept(this);
-		conditionalExpression.expr2.accept(this);
+		conditionalExpression.expression1.accept(this);
+		conditionalExpression.expression2.accept(this);
 	}
 
 	@Override
@@ -128,14 +128,14 @@ public abstract class AbstractVisitor implements Visitor
 
 	@Override
 	public void visit(DefineFieldExpression defineFieldExpression) {
-		defineFieldExpression.expression1.accept(this);
-		defineFieldExpression.expression2.accept(this);
+		defineFieldExpression.expressionToDefine.accept(this);
+		defineFieldExpression.newValueExpression.accept(this);
 	}
 
 	@Override
 	public void visit(IndexExpression indexExpression) {
-		indexExpression.expression1.accept(this);
-		indexExpression.expression2.accept(this);
+		indexExpression.parentExpression.accept(this);
+		indexExpression.indexExpression.accept(this);
 	}
 
 	@Override
@@ -197,7 +197,7 @@ public abstract class AbstractVisitor implements Visitor
 
 	@Override
 	public void visit(ObjectExpression objectExpression) {
-		objectExpression.masks.accept(this);
+		objectExpression.masksTupleExpression.accept(this);
 		objectExpression.annotations.accept(this);
 	}
 

@@ -1,47 +1,49 @@
 package org.gaslang.script.ast;
 
 import org.gaslang.script.*;
+import org.gaslang.script.parser.lexer.token.Literal;
 import org.gaslang.script.run.GasRuntime;
 import org.gaslang.script.visitor.Visitor;
 
-public class IndexExpression implements Expression, Accessible
+public class IndexExpression extends OperatorExpression implements Accessible
 {
-	public Expression expression1, expression2;
+	public Expression parentExpression, indexExpression;
 
-	public IndexExpression(Expression expression1, Expression expression2) {
-		this.expression1 = expression1;
-		this.expression2 = expression2;
+	public IndexExpression(Expression parentExpression, Expression indexExpression) {
+		super(indexExpression);
+		this.parentExpression = parentExpression;
+		this.indexExpression = indexExpression;
 	}
 
 	@Override
-	public Value<?> eval(GasRuntime gr) {
-		return get(gr);
+	public Value<?> eval(GasRuntime gasRuntime) {
+		return get(gasRuntime);
 	}
 
 	@Override
-	public Value<?> get(GasRuntime gr) {
+	public Value<?> get(GasRuntime gasRuntime) {
 		try {
-			var value1 = expression1.eval(gr);
-			var value2 = expression2.eval(gr);
-			return value1.index(value2);
+			var parentValue = parentExpression.eval(gasRuntime);
+			var indexValue = indexExpression.eval(gasRuntime);
+			return parentValue.index(indexValue);
 		} catch (ElvisExpression.ElvisNonMatched m) {
 			return NullValue.NIL_VALUE;
 		}
 	}
 
 	@Override
-	public Value<?> set(GasRuntime gr, Value<?> v) {
+	public Value<?> set(GasRuntime gasRuntime, Value<?> valueToSet) {
 		try {
-			var value1 = expression1.eval(gr);
-			var value2 = expression2.eval(gr);
-			return value1.set(value2, v);
+			var parentValue = parentExpression.eval(gasRuntime);
+			var indexValue = indexExpression.eval(gasRuntime);
+			return parentValue.set(indexValue, valueToSet);
 		} catch (ElvisExpression.ElvisNonMatched m) {
 			return NullValue.NIL_VALUE;
 		}
 	}
 	@Override
-	public Value<?> insert(GasRuntime gr, Value<?> v) {
-		return set(gr, v);
+	public Value<?> insert(GasRuntime gasRuntime, Value<?> valueToInsert) {
+		return set(gasRuntime, valueToInsert);
 	}
 
 	@Override
@@ -50,13 +52,17 @@ public class IndexExpression implements Expression, Accessible
 	}
 
 	@Override
-	public String index(GasRuntime gr) {
-		Value<?> value = expression2.eval(gr);
-		return value.matchValueType(ValueType.STRING) ? value.asString() : null;
+	public Literal index(GasRuntime gr) {
+		if (indexExpression instanceof Accessible accessible) {
+			return accessible.index(gr);
+		} else if (indexExpression instanceof PrimaryExpression primary) {
+			return primary.literalValue;
+		}
+		throw gr.error(getPosition(), "Unknown literal index");
 	}
 
 	@Override
 	public String toString() {
-		return expression1 + "[" + expression2 + "]";
+		return parentExpression + "[" + indexExpression + "]";
 	}
 }

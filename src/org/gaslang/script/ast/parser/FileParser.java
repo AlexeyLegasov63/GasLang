@@ -10,32 +10,21 @@ import org.gaslang.script.parser.lexer.error.ParserError;
 import org.gaslang.script.parser.lexer.token.Literal;
 import org.gaslang.script.parser.lexer.token.Token;
 import org.gaslang.script.parser.lexer.token.TokenType;
-import org.gaslang.script.run.GasRuntime;
-import org.gaslang.script.visitor.Visitor;
 
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.gaslang.script.NullValue.NIL_VALUE;
 import static org.gaslang.script.parser.lexer.token.TokenType.*;
 
 public class FileParser
 {
-	private static final Expression NIL_EXPRESSION = new Expression() {
-		@Override
-		public Value<?> eval(GasRuntime gr) {
-			return NIL_VALUE;
-		}
-		@Override
-		public void accept(Visitor visitor) {
-		}
-	};
+	private static final Expression NIL_EXPRESSION = new FakeExpression();
 	
 	private List<Statement> statements;
 	private final List<Token> tokens;
 	private final File file;
-	private int position, max, row, col;
+	private int position, max, row, column;
 	private Script script;
 	
 	public FileParser(File file, List<Token> tokens) {
@@ -123,10 +112,10 @@ public class FileParser
 	}
 	
 	private Expression logicalAnd() {
-		Expression expression = bitwiseXor();
+		Expression expression = bitwiseOr();
         while (true) {
             if (match(TokenType.AND)) {
-            	expression = new ConditionalExpression(expression, bitwiseXor(), ConditionalyOperator.AND);
+            	expression = new ConditionalExpression(expression, bitwiseOr(), ConditionalyOperator.AND);
                 continue;
             }
             break;
@@ -332,7 +321,8 @@ public class FileParser
 		return expression;
 	}
 	private Expression primary() {
-		Token token = get(0);
+		var token = get(0);
+		var position = getPosition();
 		
 		if (token.getTokenType().isValue()) {
 			skip();
@@ -340,7 +330,7 @@ public class FileParser
 		} else if (match(FUNCTION)) {
 			Arguments arguments = parseArguments();
 			Statement statement = match(EQRT) ? new ReturnStatement(expression()) : parseBlock();
-			return new FunctionExpression(statement, arguments, new AnnotationsExpression(), false);
+			return new FunctionExpression(position, statement, arguments, new AnnotationsExpression(), false);
 		} else if (look(WORD) && look(LBRAC, 1)) {
 			consume(WORD);
 			consume(LBRAC);
@@ -351,11 +341,11 @@ public class FileParser
 				expr = parseNodes();
 				consume(RBRAC);
 			}
-			return new StructExpression(expr, token.takeLiteral().getLiteral());
+			return new StructExpression(token.takeLiteral(), expr);
 		} else if (look(LPAREN) && (look(GLOBAL, 1) || look(LOCAL, 1))) {
 			return parseSpaceVariable();
 		} else if (match(DLR)) {
-			return new ParamsExpression();
+			return new VarArgsExpression(position);
 		} else if (look(WORD) && look(QST, 1)) {
 			consume(WORD);
 			consume(QST);
@@ -376,8 +366,10 @@ public class FileParser
 		if (look(LBRAC)) {
 			return parseArray();
 		}
+
 		throw report("Unknown primary expression: " + token.getTokenType());
 	}
+
 	private Expression parseSpaceVariable() {
 		consume(LPAREN);
 		var current = get(0);
@@ -396,27 +388,27 @@ public class FileParser
 	private Expression parseArray() {
 		consume(LBRAC);
 		if (match(RBRAC)) {
-			return new TableExpression(new Nodes());
+			return new TableExpression(getPosition(), new Nodes());
 		}
 		if (findChild(EQ, RBRAC)) {
-			Nodes expr = parseNodes();
+			Nodes nodesExpression = parseNodes();
 			consume(RBRAC);
-			return new TableExpression(expr);
+			return new TableExpression(getPosition(), nodesExpression);
 		} else {
-			Expression expr = parseExpressionOrTuple();
+			Expression tupleExpression = parseExpressionOrTuple();
 			consume(RBRAC);
-			return new ArrayExpression(expr);
+			return new ArrayExpression(tupleExpression);
 		}
 	}
 	private Expression parseCall(Expression expression) {
 		Expression args;
 		if (match(RPAREN)) {
-			args = new TupleExpression();
+			args = new TupleExpression(getPosition());
 		} else {
 			args = parseTuple();
 			consume(RPAREN);
 		}
-		return new CallExpression(expression, args);
+		return new CallExpression(expression.getPosition(), expression, args);
 	}
 	private Statement parseCycle() {
 		consume(CYCLE);
@@ -497,12 +489,12 @@ public class FileParser
 		Arguments arguments = parseArguments();
 		
 		TupleExpression masks = match(WEARS) ? parseTuple() : null;
-		
-		
+
 		return new DefineFieldStatement(expr, new ObjectExpression(((Accessible)expr).index(null), arguments, masks, annotations));
 	}
 	
 	private Statement parseFunction(AnnotationsExpression annotations) {
+		var position = getPosition();
 		consume(FUNCTION);
 		Expression expr = index(null);
 		boolean isInstanceFunction = match(COLON);
@@ -512,9 +504,10 @@ public class FileParser
 		Arguments arguments = parseArguments();
 		Statement statement = match(EQRT) ?  new ReturnStatement(expression()) : parseBlock();
 		
-		return new DefineFieldStatement(expr, new FunctionExpression(statement, arguments, annotations, isInstanceFunction));
+		return new DefineFieldStatement(expr, new FunctionExpression(position, statement, arguments, annotations, isInstanceFunction));
 	}
 	private Statement parseField() {
+		var position = getPosition();
 		consume(MUT);
 		ArrayList<Expression> names = new ArrayList<>();
 		do {
@@ -524,7 +517,7 @@ public class FileParser
 			}
 			names.add(index(null));
 		} while(match(COMMA, true));
-		return new TupleFieldStatement(names.toArray(new Expression[0]), match(EQ) ? parseExpressionOrTuple() : new TupleExpression());
+		return new TupleFieldStatement(names.toArray(new Expression[0]), match(EQ) ? parseExpressionOrTuple() : new TupleExpression(position));
 	}
 	private Statement parseReturn() {
 		consume(RETURN);
@@ -569,13 +562,14 @@ public class FileParser
 		return new ImportStatement(buffer.toString(), aliasName);
 	}
 	private Statement parseExport() {
+		var position = getPosition();
 		consume(EXPORT);
 		
 		Expression expression = expression();
 		
 		String exportAlias = match(AS) ? consumeWord() : null;
 		
-		return new ExportStatement(script, expression, exportAlias);
+		return new ExportStatement(position, script, expression, exportAlias);
 	}
 	private Statement parseAlias() {
 		consume(ALIAS);
@@ -607,6 +601,7 @@ public class FileParser
 		return expr;
 	}
 	private FunctionExpression parseOneHeldLambda() {
+		var position = getPosition();
 		var varName = consumeWord();
 		consume(EQRT);
 		var basicBlock = new BlockStatement();
@@ -614,10 +609,11 @@ public class FileParser
 			basicBlock.add(statement());
 		} while (match(AND));
 		var args = new Arguments(new ArrayList<>(List.of(new Argument(varName))), false);
-		return new FunctionExpression(basicBlock, args, new AnnotationsExpression(), false);
+		return new FunctionExpression(position, basicBlock, args, new AnnotationsExpression(), false);
 	}
 	private TupleExpression parseTuple() {
-		TupleExpression expr = new TupleExpression();
+		var position = getPosition();
+		TupleExpression expr = new TupleExpression(position);
 		do {
 			if (look(WORD) && look(EQRT, 1)) {
 				expr.add(parseOneHeldLambda());
@@ -636,7 +632,8 @@ public class FileParser
 	private Expression parseExpressionOrTuple() {
 		Expression expr = expression();
 		if (look(COMMA)) {
-			TupleExpression tuple = new TupleExpression();
+			var position = getPosition();
+			TupleExpression tuple = new TupleExpression(position);
 			tuple.add(expr);
 			while(match(COMMA)) {
 				tuple.add(expression());
@@ -658,18 +655,18 @@ public class FileParser
 	
 	private Arguments parseArguments() {
 		ArrayList<Argument> args = new ArrayList<>();
-		boolean isFree = false;
+		boolean isVarArgs = false;
 		consume(LPAREN);
 		while(!match(RPAREN)) {
 			if (match(DLR)) {
-				isFree = true;
+				isVarArgs = true;
 				consume(RPAREN);
 				break;
 			}
 			args.add(new Argument(consumeWord()));
 			match(COMMA);
 		}
-		return new Arguments(args, isFree);
+		return new Arguments(args, isVarArgs);
 	}
 	
 	private Expression parseLiteral() {
@@ -700,7 +697,9 @@ public class FileParser
 			
 			statements.add(statement());
 		}
-		if (stopAtEnd && match(END));
+		if (stopAtEnd) {
+			match(END);
+		}
 		return statements.size() == 1 ? statements.get(0) : new BlockStatement(statements);
 	}
 	private boolean findChild(TokenType child, TokenType stop) {
@@ -757,13 +756,12 @@ public class FileParser
 		if (!token.match(type)) return false;
 		position++;
 		if (type != EOF) switchPosition(get(0));
-		else throw new RuntimeException();
+		else throw report("Non matched token: " + type);
 		return true;
 	}
-	private boolean skip() {
+	private void skip() {
 		position++;
 		switchPosition(get(0));
-		return true;
 	}
 	private boolean look(TokenType type) {
 		return look(type, 0);
@@ -773,9 +771,12 @@ public class FileParser
 	}
 	private void switchPosition(Token add) {
 		row = add.getLineStart();
-		col = add.getColumnStart();
+		column = add.getColumnStart();
+	}
+	private Position getPosition() {
+		return Position.of(file.getName(), row, column);
 	}
 	private ParserError report(String s) {
-		return new ParserError(String.format("\"%s\" at [row=%s,col=%s] of %s", s, row, col, file.getName()));
+		return new ParserError(String.format("\"%s\" at [row=%s,col=%s] of %s", s, row, column, file.getName()));
 	}
 }

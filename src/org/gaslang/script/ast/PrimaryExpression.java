@@ -8,26 +8,25 @@ import org.gaslang.script.parser.lexer.token.NumberLiteral;
 import org.gaslang.script.run.GasRuntime;
 import org.gaslang.script.visitor.Visitor;
 
-public class PrimaryExpression implements Expression
+public class PrimaryExpression extends OperandExpression
 {
-	public Literal token;
+	public final Literal literalValue;
 
-	public PrimaryExpression(Literal token) {
-		this.token = token;
+	public PrimaryExpression(Literal literalValue) {
+		super(Position.of(literalValue));
+		this.literalValue = literalValue;
 	}
 
 	@Override
-	public Value<?> eval(GasRuntime gr) {
-		switch (token.getTokenType()) {
-			case CHARACTER: return new CharacterValue(((CharacterLiteral)token).getCharacter());
-			case BOOLEAN: return new BooleanValue(((BooleanLiteral)token).getBoolean());
-			case NUMBER: return new NumberValue(((NumberLiteral)token).getNumber());
-			case WORD:
-			case STRING: return new StringValue(token.getLiteral());
-			case NULL: return NullValue.NIL_VALUE;
-			default: break;
-		}
-		throw new RuntimeException();
+	public Value<?> eval(GasRuntime gasRuntime) {
+		return switch (literalValue.getTokenType()) {
+			case CHARACTER -> new CharacterValue(((CharacterLiteral) literalValue).getCharacter());
+			case BOOLEAN -> new BooleanValue(((BooleanLiteral) literalValue).getBoolean());
+			case NUMBER -> new NumberValue(((NumberLiteral) literalValue).getNumber());
+			case WORD, STRING -> new StringValue(literalValue.getLiteral());
+			case NULL -> NullValue.NIL_VALUE;
+			default -> throw gasRuntime.error(getPosition(), "Unknown literal value: " + literalValue);
+		};
 	}
 
 	@Override
@@ -37,6 +36,6 @@ public class PrimaryExpression implements Expression
 
 	@Override
 	public String toString() {
-		return token.getLiteral();
+		return literalValue.getLiteral();
 	}
 }

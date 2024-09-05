@@ -17,8 +17,7 @@ public class Tuple extends Value<ArrayList<Value<?>>>
 		var tuple = new ArrayList<Value<?>>();
 		
 		for (int i = 0, l = values.length; i < l; i++) {
-			if (values[i] instanceof Tuple) {
-				var other = (Tuple)values[i];
+			if (values[i] instanceof Tuple other) {
 				tuple.addAll(other.values);
 				named.putAll(other.named);
 				continue;
@@ -49,7 +48,7 @@ public class Tuple extends Value<ArrayList<Value<?>>>
 	}
 	
 	public String concat(String sep) {
-		StringBuffer buffer = new StringBuffer();
+		StringBuilder buffer = new StringBuilder();
 		for (int i = 0, l = getSize(); i < l; i++) {
 			var value = values.get(i);
 			buffer.append(value.asString());
@@ -191,6 +190,10 @@ public class Tuple extends Value<ArrayList<Value<?>>>
 
 			throw new RuntimeException();
 		}
+	}
+
+	public void addFirst(Value<?> value) {
+		values.add(0, value);
 	}
 	
 	public int getSize() {

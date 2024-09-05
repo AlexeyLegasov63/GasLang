@@ -3,7 +3,7 @@ package org.gaslang.script;
 import org.gaslang.script.ast.ReturnStatement;
 import org.gaslang.script.run.GasRuntime;
 
-public class FunctionValue extends Value<Statement> implements Annotated, PrimitiveValue
+public class FunctionValue extends Value<Statement> implements Annotated, PrimitiveValue, Named
 {
 	public final GasRuntime localStack;
 	private final String functionName;
@@ -40,19 +40,20 @@ public class FunctionValue extends Value<Statement> implements Annotated, Primit
 		}
 
 		if (arg < arguments) {
-			// Tail of values which are out of bounds
-			localStack.setLocal("$", args.subTuple(arg));
+			localStack.setLocal("<VarArgs>", args.subTuple(arg));
 		}
 	}
 	
 	@Override
-	public Value<?> call(Tuple args) {
+	public synchronized Value<?> call(GasRuntime gasRuntime, Tuple args) {
+		localStack.append(gasRuntime);
+
 		localStack.push();
 		
 		loadArguments(args);
 		
 		try {
-			functionStatement.execute(localStack);
+			functionStatement.execute(new GasRuntime(localStack));
 			localStack.pop();
 		} catch(ReturnStatement t) {
 			localStack.pop();
@@ -68,7 +69,8 @@ public class FunctionValue extends Value<Statement> implements Annotated, Primit
 	public String asString() {
 		return "function";
 	}
-	
+
+	@Override
 	public String getName() {
 		return functionName;
 	}

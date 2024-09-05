@@ -1,8 +1,7 @@
 package org.gaslang.script.lib;
 
 import org.gaslang.script.*;
-
-import java.util.Arrays;
+import org.gaslang.script.run.GasRuntime;
 
 public class NativeFunctionValue extends Value<FunctionBlock>
 {
@@ -18,9 +17,9 @@ public class NativeFunctionValue extends Value<FunctionBlock>
 	}
 
 	@Override
-	public Value<?> call(Tuple args) {
+	public Value<?> call(GasRuntime gasRuntime, Tuple args) {
 		try {
-			Value<?> result = jValue().execute(args);
+			Value<?> result = jValue().execute(gasRuntime, args);
 			return result == null ? NullValue.NIL_VALUE : result;
 		} catch(Throwable t) {
 			t.printStackTrace();

@@ -5,6 +5,7 @@ import org.gaslang.script.lib.GasPackage;
 import org.gaslang.script.lib.NativeFunctionValue;
 import org.gaslang.script.lib.ScriptBootstrap;
 import org.gaslang.script.lib.ScriptNativeType;
+import org.gaslang.script.lib.annotation.GasFunction;
 import org.gaslang.script.parser.lexer.token.TokenType;
 import org.gaslang.script.run.GasRuntime;
 
@@ -12,6 +13,7 @@ import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.Optional;
 
 import static org.gaslang.script.NullValue.NIL_VALUE;
 
@@ -117,6 +119,22 @@ public class ScriptAPI
 		}
 		throw new RuntimeException("Unknown jGasLang type: " + value.getClass().getName());
 	}
+	public static void printStackTrace(GasRuntime gasRuntime, Optional<Integer> level) {
+		var stackTrace = gasRuntime.getCallbacks();
+		var stackTracePrintLevel = level.orElse(stackTrace.size());
+		var stackTraceStringBuffer = new StringBuilder("StackTrace:");
+		for (int i = stackTracePrintLevel-1; i >= 0; i--) {
+			var callInfo = stackTrace.get(i);
+			var callbackFunctionName = callInfo.name();
+			var callbackPosition = callInfo.position();
+			stackTraceStringBuffer.append(String.format("\n\t%s [%s:%s in %s]",
+					callbackFunctionName,
+					callbackPosition.row(),
+					callbackPosition.column(),
+					callbackPosition.script()));
+		}
+		System.out.println(stackTraceStringBuffer);
+	}
 	
 	private final ArrayList<ScriptType> types;
 	private final ArrayList<ScriptModule> modules;
@@ -131,10 +149,6 @@ public class ScriptAPI
 
 		registerPackage("org.gaslang.script.lib.boot");
 	}
-	
-	public void global(String name, Value<?> value) {
-		GasRuntime.GLOBAL_VALUES.put(name, value);
-	}
 	public void register(ScriptModule module) {
 		modules.add(module);
 		GasRuntime.GLOBAL_VALUES.put(module.getName(), module);
@@ -142,14 +156,6 @@ public class ScriptAPI
 	public void register(ScriptType type) {
 		types.add(type);
 		GasRuntime.GLOBAL_VALUES.put(type.getName(), type);
-	}
-	public void unregister(ScriptModule module) {
-		modules.remove(module);
-		GasRuntime.GLOBAL_VALUES.remove(module.getName());
-	}
-	public void unregister(String module) {
-		modules.removeIf((child) -> child.getName().equals(module));
-		GasRuntime.GLOBAL_VALUES.remove(module);
 	}
 	public ScriptNativeType<?> getType(String name) {
 		return (ScriptNativeType<?>) types.stream()
@@ -166,10 +172,10 @@ public class ScriptAPI
 	
 	public void registerPackage(GasPackage gasPackage) {
 		gasPackage.getModules().forEach(
-				(child) -> SCRIPT_API.register((ScriptModule) child));
+				(child) -> register((ScriptModule) child));
 		
 		gasPackage.getTypes().forEach(
-				(child) -> SCRIPT_API.register((ScriptType) child));
+				(child) -> register((ScriptType) child));
 	}
 	
 	public void registerPackage(String packageName) {

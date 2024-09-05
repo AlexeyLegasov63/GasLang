@@ -6,6 +6,7 @@ import org.gaslang.script.Tuple;
 import org.gaslang.script.Value;
 import org.gaslang.script.api.ScriptType;
 import org.gaslang.script.exception.ValueMatchingTypeError;
+import org.gaslang.script.run.GasRuntime;
 
 import java.util.HashMap;
 
@@ -40,12 +41,12 @@ public class ScriptNativeObject extends ObjectValue implements NativeObject, Ite
 		else throw new ValueMatchingTypeError();
 	}
 
-	void callContructor(Tuple args) {
+	void callConstructor(GasRuntime gasRuntime, Tuple args) {
 		Value<?> constructor = jValue().get("constructor");
 		
 		if (constructor == null) return;
-		
-		constructor.call(args);
+
+		constructor.call(gasRuntime, args);
 	}
 
 	@Override

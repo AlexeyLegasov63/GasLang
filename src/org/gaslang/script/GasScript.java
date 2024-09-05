@@ -1,6 +1,8 @@
 package org.gaslang.script;
 
+import org.gaslang.script.api.ScriptAPI;
 import org.gaslang.script.ast.parser.FileParser;
+import org.gaslang.script.exception.RunError;
 import org.gaslang.script.parser.lexer.FileLexer;
 import org.gaslang.script.parser.lexer.io.SourceReader;
 import org.gaslang.script.visitor.SourceDrawer;
@@ -8,6 +10,7 @@ import org.gaslang.script.visitor.SourceDrawer;
 import java.io.File;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Optional;
 
 public class GasScript
 {
@@ -38,8 +41,9 @@ public class GasScript
 
 		try {
 			script.execute();
-		} catch (Exception ex) {
-			ex.printStackTrace();
+		} catch (RunError runError) {
+			System.err.println(runError.getMessage());
+			ScriptAPI.printStackTrace(script.getRuntime(), Optional.empty());
 		}
 		
 		CACHED_SCRIPTS.put(fileName, script);

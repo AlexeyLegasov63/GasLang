@@ -81,4 +81,9 @@ abstract class MethodAccessor implements FunctionBlock
 		}
 		return args.toString();
 	}
+
+	@Override
+	public String getName() {
+		return nativeMethod.getName();
+	}
 }

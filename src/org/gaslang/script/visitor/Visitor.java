@@ -24,7 +24,7 @@ public interface Visitor
 
 	void visit(TupleFieldStatement tupleFieldStatement);
 
-	void visit(ParamsExpression paramsExpression);
+	void visit(VarArgsExpression varArgsExpression);
 
 	void visit(WhileStatement whileStatement);
 
