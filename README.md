@@ -4,7 +4,14 @@
 This programming language allows to script any program that involves Java code.
 
 ```lua
-print("Hello world!", "This is Gaslang!")
+println("Hello world!", "This is Gaslang!")
 ```
 
 This was created by me just for fun and experience and has no purpose.
+
+# Simple Console Calculator
+```lua
+let inputScanner = InputScanner()
+let x, y = inputScanner.nextNumber(), inputScanner.nextNumber()
+println(x + y)
+```
