@@ -26,4 +26,9 @@ public class InputScanner
 	public String next() {
 		return value.next();
 	}
+
+	@GasFunction
+	public int nextNumber() {
+		return value.nextInt();
+	}
 }

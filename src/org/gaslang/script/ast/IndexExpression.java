@@ -1,6 +1,8 @@
 package org.gaslang.script.ast;
 
 import org.gaslang.script.*;
+import org.gaslang.script.lib.NativeObject;
+import org.gaslang.script.lib.ScriptNativeModule;
 import org.gaslang.script.parser.lexer.token.Literal;
 import org.gaslang.script.run.GasRuntime;
 import org.gaslang.script.visitor.Visitor;
@@ -25,7 +27,11 @@ public class IndexExpression extends OperatorExpression implements Accessible
 		try {
 			var parentValue = parentExpression.eval(gasRuntime);
 			var indexValue = indexExpression.eval(gasRuntime);
-			return parentValue.index(indexValue);
+			var indexedValue = parentValue.index(indexValue);
+			if (parentValue instanceof NativeObject && indexedValue == null) {
+				throw gasRuntime.error(getPosition(), String.format("There's no such variable %s in %s", indexExpression, parentExpression));
+			}
+			return indexedValue;
 		} catch (ElvisExpression.ElvisNonMatched m) {
 			return NullValue.NIL_VALUE;
 		}
