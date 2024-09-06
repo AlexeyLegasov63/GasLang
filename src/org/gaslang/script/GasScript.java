@@ -20,30 +20,32 @@ public class GasScript
 		return loadScript(fileName, new HashSet<>());
 	}
 
-	public static Script loadScript(String fileName, HashSet<String> options) {
+	public synchronized static Script loadScript(String fileName, HashSet<String> options) {
 		if (CACHED_SCRIPTS.containsKey(fileName)) return CACHED_SCRIPTS.get(fileName);
 
-		String fileDirectory = String.format("%s.gs", fileName);
-		
-		File file = new File(fileDirectory);
+		var fileDirectory = String.format("%s.gs", fileName);
+		var file = new File(fileDirectory);
 		
 		if (!file.exists()) throw new RuntimeException();
 
-		FileParser parser = new FileLexer(file, new SourceReader().getInput(file)).toParser();
-
-		Script script = parser.parse();
+		var scriptParser = new FileLexer(file, new SourceReader().getInput(file)).toParser();
+		var script = scriptParser.parse();
 
 		if (options.contains("-s")) {
-			SourceDrawer drawer = new SourceDrawer();
+			var drawer = new SourceDrawer();
 			script.accept(drawer);
 			System.out.println(drawer.result());
 		}
 
 		try {
 			script.execute();
-		} catch (RunError runError) {
+		} catch (Exception runError) {
 			System.err.println(runError.getMessage());
 			ScriptAPI.printStackTrace(script.getRuntime(), Optional.empty());
+			if (!(runError instanceof RunError)) {
+				return script;
+			}
+			throw new RuntimeException(runError);
 		}
 		
 		CACHED_SCRIPTS.put(fileName, script);
